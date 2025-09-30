@@ -12,11 +12,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import ru.crimea.beelife.dto.UserDto;
+import ru.crimea.beelife.mapper.UserMapper;
 import ru.crimea.beelife.model.User;
 import ru.crimea.beelife.service.SecurityService;
 import ru.crimea.beelife.service.UserService;
@@ -36,6 +35,9 @@ public class RegistrationController {
     @Autowired
     private UserValidator userValidator;
 
+    @Autowired
+    private final UserMapper userMapper;
+
     @GetMapping("/registration")
     public String registration(Model model) {
         model.addAttribute("userForm", new User());
@@ -45,14 +47,16 @@ public class RegistrationController {
 
 
     @PostMapping("/registration")
-    public String registrationUser(@ModelAttribute("userForm") @Validated User userForm, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) {
+    public String registrationUser(@ModelAttribute("userForm") @Validated UserDto userForm, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) {
 
         userValidator.validate(userForm, bindingResult);
 
         if (bindingResult.hasErrors()) {
             return "redirect:/login#toregister";
         }
-        if (!userService.saveUser(userForm)){
+        User user = userMapper.toModel(userForm);
+
+        if (!userService.saveUser(user)) {
             return "redirect:/login#toregister";
         }
         securityService.autologin(userForm.getUsername(), userForm.getPasswordConfirm(), request);

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
+import ru.crimea.beelife.dto.UserDto;
 import ru.crimea.beelife.model.User;
 import ru.crimea.beelife.service.UserService;
 
@@ -22,7 +23,7 @@ public class UserValidator implements Validator {
 
     @Override
     public void validate(Object o, Errors errors) {
-        User user = (User) o;
+        UserDto user = (UserDto) o;
 
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "username", "NotEmpty");
 
