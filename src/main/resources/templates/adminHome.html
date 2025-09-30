@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <title>Hello Admin!</title>
+    <link rel="stylesheet" th:href="@{/styles/css/base.css}"/>
+    <link rel="stylesheet" th:href="@{/styles/css/style.css}"/>
+    <link rel="stylesheet" th:href="@{/styles/css/animate-custom.css}"/>
+    <link rel="stylesheet" th:href="@{/styles/css/table.css}"/>
+</head>
+<body style="font-size: 14px; position: relative; padding: 15px 20px;">
+<div class="container">
+    <!-- Codrops top bar -->
+    <header>
+        <h1 th:inline="text">Hello <span th:remove="tag" sec:authentication="name">Admin!</span>!</h1>
+    </header>
+    <table class="table">
+        <thead>
+        <tr>
+            <th th:text="#{user.username}">Имя</th>
+            <th>Email</th>
+            <th>Удалить</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${allUsers}">
+            <td th:text="${user.getUsername()}"></td>
+            <td th:text="${user.getEmail()}"></td>
+            <td> <button type="submit" name="removeRow"
+                         th:value="${user.getId()}" >Remove row</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <form th:action="@{/logout}" method="post">
+        <input type="submit" value="Sign Out"/>
+    </form>
+</div>
+</body>
+</html>
