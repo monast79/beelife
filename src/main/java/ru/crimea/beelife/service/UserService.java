@@ -1,16 +1,18 @@
 package ru.crimea.beelife.service;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.crimea.beelife.config.MyPasswordEncoder;
+import ru.crimea.beelife.dto.UserDto;
+import ru.crimea.beelife.mapper.UserMapper;
 import ru.crimea.beelife.model.Role;
 import ru.crimea.beelife.model.User;
 import ru.crimea.beelife.repository.RoleRepository;
@@ -18,8 +20,6 @@ import ru.crimea.beelife.repository.UserRepository;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -32,7 +32,8 @@ public class UserService implements UserDetailsService {
     RoleRepository roleRepository;
     @Autowired
     MyPasswordEncoder passwordEncoder;
-
+    @Autowired
+    private UserMapper userMapper;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -45,12 +46,33 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
-    public List<User> allUsers() {
-        return userRepository.findAll().stream().filter(User::isEnabled).collect(Collectors.toList());
+    public Page<UserDto> allActiveUsers(Pageable pageable, String username) {
+        int pageSize = pageable.getPageSize();
+        int currentPage = pageable.getPageNumber();
+        int startItem = currentPage * pageSize;
+        List<User> users;
+        if (username == null) {
+            users = userRepository.findByEnabled(Boolean.TRUE);
+        } else {
+            users = userRepository.findByUsernameContainingIgnoreCaseAndEnabled(username, Boolean.TRUE);
+        }
+
+        List<UserDto> userDtos = userMapper.toDtoList(users);
+        List<UserDto> list;
+        if (userDtos.size() < startItem) {
+            list = Collections.emptyList();
+        } else {
+            int toIndex = Math.min(startItem + pageSize, userDtos.size());
+            list = userDtos.subList(startItem, toIndex);
+        }
+
+        Page<UserDto> page = new PageImpl<UserDto>(list, PageRequest.of(currentPage, pageSize), userDtos.size());
+
+        return page;
     }
 
-    public boolean saveUser(User user) {
-        User userFromDB = userRepository.findByUsername(user.getUsername());
+    public boolean saveUser(UserDto userDto) {
+        User userFromDB = userRepository.findByUsername(userDto.getUsername());
 
         if (userFromDB != null) {
             return false;
@@ -59,6 +81,8 @@ public class UserService implements UserDetailsService {
         if (role == null) {
             return false;
         }
+        User user = userMapper.toModel(userDto);
+
         user.setRoles(Collections.singleton(role));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setEnabled(true);

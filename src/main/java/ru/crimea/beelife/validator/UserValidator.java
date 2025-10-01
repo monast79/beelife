@@ -29,7 +29,7 @@ public class UserValidator implements Validator {
 
         try {
             if (userService.loadUserByUsername(user.getUsername()) != null) {
-                errors.rejectValue("username", "Duplicate.userForm.username");
+                errors.rejectValue("userName", "Duplicate.userForm.username");
             }
         } catch (UsernameNotFoundException ignored) {
         }

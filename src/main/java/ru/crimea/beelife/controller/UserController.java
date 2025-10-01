@@ -15,9 +15,4 @@ public class UserController {
     @Autowired
     private final UserService userService;
 
-    @GetMapping("userHome")
-    public String userHome(Model model) {
-        model.addAttribute("allUsers", userService.allUsers());
-        return "userHome";
-    }
 }
