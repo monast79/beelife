@@ -1,40 +1,170 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
-      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<html xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <title>Hello Admin!</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0" />
+    <title>Beelife</title>
+
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
     <link rel="stylesheet" th:href="@{/styles/css/base.css}"/>
     <link rel="stylesheet" th:href="@{/styles/css/style.css}"/>
     <link rel="stylesheet" th:href="@{/styles/css/animate-custom.css}"/>
     <link rel="stylesheet" th:href="@{/styles/css/table.css}"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+          integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
 </head>
-<body style="font-size: 14px; position: relative; padding: 15px 20px;">
-<div class="container">
-    <!-- Codrops top bar -->
-    <header>
-        <h1 th:inline="text">Hello <span th:remove="tag" sec:authentication="name">Admin!</span>!</h1>
-    </header>
-    <table class="table">
-        <thead>
-        <tr>
-            <th th:text="#{user.username}">Имя</th>
-            <th>Email</th>
-            <th>Удалить</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="user : ${allUsers}">
-            <td th:text="${user.getUsername()}"></td>
-            <td th:text="${user.getEmail()}"></td>
-            <td> <button type="submit" name="removeRow"
-                         th:value="${user.getId()}" >Remove row</button>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-    <form th:action="@{/logout}" method="post">
-        <input type="submit" value="Sign Out"/>
-    </form>
+
+<body>
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container-fluid" style="max-width: 900px; margin: 0 auto;">
+    <h2 class="text-center">Users</h2>
+
+    <div th:if="${message != null}" class="alert alert-success alert-dismissible fade show text-center message"
+         role="alert">
+        [[${message}]]
+        <button type="button" class="close btn-sm" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <div class="my-3">
+        <form th:action="@{/admin/home}" id="searchForm">
+            <div class="row d-flex">
+                <div class="col-md-6 mt-2">
+                    <div class="search">
+                        <i class="fa fa-search"></i>
+                        <input id="keyword" type="search" name="keyword" th:value="${keyword}" required class="form-control"
+                               placeholder="Enter keyword">
+                        <button type="submit" class="btn btn-secondary">Search</button>
+                    </div>
+                </div>
+                <div class="col-md-3 input-group mt-2">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="pageSize">Items per page:</label>
+                    </div>
+                    <select form="searchForm" name="size" th:value="${pageSize}" onchange="changePageSize()" class="size-select"
+                            id="pageSize">
+                        <option th:each="s : ${ {3, 5, 10} }" th:value="${s}" th:text="${s}" th:selected="${s == pageSize}"></option>
+                    </select>
+                </div>
+                <div class="col-md-1 mt-2">
+                    <button id="btnClear" class="btn btn-info">Clear</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div th:if="${users.size() > 0}">
+        <table class="table table-hover table-responsive-xl">
+            <thead class="thead-light">
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Username</th>
+                <th scope="col">Email</th>
+                <th scope="col">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user : ${users}">
+                <th scope="row">[[${user.id}]]</th>
+                <td>[[${user.username}]]</td>
+                <td>[[${user.email}]]</td>
+                <td>
+                    <a th:href="@{'/admin/home/update/' + ${user.id}}" title="Edit this user"
+                       class="fa-regular fa-pen-to-square icon-dark"></a>
+                    &nbsp;
+                    <a th:href="@{'/admin/home/delete/' + ${user.id}}" th:username="${user.username}" id="btnDelete"
+                       title="Delete this user" class="fa-regular fa-trash-can icon-dark btn-delete"></a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:unless="${users.size() > 0}">
+        <span>No users found!</span>
+    </div>
+
+    <nav aria-label="Pagination" th:if="${totalPages > 0}">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                <a th:replace="fragments/paging :: paging(1, '<<', 'First Page')"></a>
+            </li>
+            <li class="page-item font-weight-bold" th:classappend="${currentPage == 1} ? 'disabled'">
+                <a th:replace="fragments/paging :: paging(${currentPage - 1}, 'Prev', 'Previous Page')"></a>
+            </li>
+            <li class="page-item disabled" th:if="${currentPage - 2 > 1}">
+                <a class="page-link" href="#">...</a>
+            </li>
+            <li class="page-item" th:classappend="${page == currentPage} ? 'active'"
+                th:each="page : ${#numbers.sequence(currentPage > 2 ? currentPage - 2 : 1, currentPage + 2 < totalPages ? currentPage + 2 : totalPages)}">
+                <a th:replace="fragments/paging :: paging(${page}, ${page}, 'Page ' + ${page})"></a>
+            </li>
+            <li class="page-item disabled" th:if="${currentPage + 2 < totalPages}">
+                <a class="page-link" href="#">...</a>
+            </li>
+            <li class="page-item font-weight-bold" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                <a th:replace="fragments/paging :: paging(${currentPage + 1},'Next', 'Next Page')"></a>
+            </li>
+            <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                <a th:replace="fragments/paging :: paging(${totalPages}, '>>', 'Last Page')"></a>
+            </li>
+        </ul>
+    </nav>
 </div>
+
+<div class="modal fade text-center" id="confirmModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Confirmation</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <span id="confirmText"></span>
+            </div>
+
+            <div class="modal-footer">
+                <a type="button" id="yesBtn" class="btn btn-danger">Yes</a>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".btn-delete").on("click", function (e) {
+            e.preventDefault();
+            link = $(this);
+
+            username = link.attr("username");
+            $("#yesBtn").attr("href", link.attr("href"));
+            $("#confirmText").html("Do you want to delete the User \<strong\>" + username + "\<\/strong\>?");
+            $("#confirmModal").modal();
+        });
+
+        $("#btnClear").on("click", function (e) {
+            e.preventDefault();
+            $("#keyword").text("");
+            window.location = "[[@{/admin/home}]]";
+        });
+    });
+
+    function changePageSize() {
+        $("#searchForm").submit();
+    }
+</script>
 </body>
+
 </html>
