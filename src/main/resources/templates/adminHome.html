@@ -11,12 +11,12 @@
     <link rel="stylesheet" th:href="@{/styles/css/style.css}"/>
     <link rel="stylesheet" th:href="@{/styles/css/animate-custom.css}"/>
     <link rel="stylesheet" th:href="@{/styles/css/table.css}"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
-          integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
-          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.min.css}"/>
     <script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"></script>
     <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
 </head>
+
+
 
 <body>
 <div th:replace="fragments/header :: header"></div>
@@ -134,7 +134,7 @@
 
             <div class="modal-footer">
                 <a type="button" id="yesBtn" class="btn btn-danger">Yes</a>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-secondary btn-default" data-bs-dismiss="modal">No</button>
             </div>
         </div>
     </div>
@@ -151,7 +151,7 @@
             username = link.attr("username");
             $("#yesBtn").attr("href", link.attr("href"));
             $("#confirmText").html("Do you want to delete the User \<strong\>" + username + "\<\/strong\>?");
-            $("#confirmModal").modal();
+            $("#confirmModal").modal('show');
         });
 
         $("#btnClear").on("click", function (e) {
