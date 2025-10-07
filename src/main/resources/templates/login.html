@@ -4,7 +4,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="keywords" content="html5, css3, form, switch, animation, :target, pseudo-class"/>
-    <title>Вход и регистрация</title>
+    <title th:text="#{title.beelife}">Beelife</title>
     <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
     <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
     <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.min.css}"/>
@@ -21,46 +21,46 @@
                     <div class="card-body">
                         <div id="login">
                             <form method="post" autocomplete="on" th:action="@{/login}">
-                                <h1>Login</h1>
-                                <p class="text-muted">Sign In to your account</p>
+                                <h1 class="text-center" th:text="#{header.login}">Login</h1>
+                                <p class="text-muted" th:text="#{label.login.to.account}">Sign In to your account</p>
                                 <div class="input-icons">
                                     <span class="input-group-addon"><i class="fa fa-user icon"></i></span>
                                     <input type="text" class="form-control input-field" id="username" name="username"
-                                           placeholder="Имя пользователя"/>
+                                           th:placeholder="#{input.placeholder.username}"/>
                                 </div>
                                 <div class="input-icons">
                                     <span class="input-group-addon"><i class="fa fa-lock icon"></i></span>
-                                    <input type="password" name="password" class="form-control input-field"
-                                           id="password" placeholder="Пароль"/>
+                                    <input type="password" name="password" class="form-control input-field" id="password"
+                                           th:placeholder="#{input.placeholder.password}"/>
                                 </div>
                                 <div class="row">
                                     <div class="col-6">
-                                        <input type="submit" class="btn btn-primary px-4" value="Войти"/>
+                                        <input type="submit" class="btn px-4 btn-warning" th:value="#{button.enter}"/>
                                     </div>
                                     <div class="col-6 text-right">
-                                        <input type="submit" id="toRegistration" class="btn btn-link px-0 btn-login" value="Зарегистрироваться"/>
+                                        <input type="submit" id="toRegistration" class="btn btn-link px-0 text-muted" th:value="#{button.registration}"/>
                                     </div>
                                 </div>
                             </form>
                         </div>
                         <div id="register" class="d-none">
                             <form method="post" autocomplete="on" th:action="@{/registration}">
-                                <h1> Регистрация </h1>
+                                <h1 class="text-center"  th:text="#{header.registration}"> Registration </h1>
                                 <div class="input-icons">
                                     <span class="input-group-addon"><i class="fa fa-user icon"></i></span>
                                     <input type="text" class="form-control input-field" id="username_reg" name="username"
-                                           required="required" placeholder="мое имя пользователя"/>
+                                           required="required" th:placeholder="#{input.placeholder.username}"/>
                                 </div>
 
                                 <div class="input-icons">
                                     <span class="input-group-addon"><i class="fa fa-user icon"></i></span>
                                     <input type="text" class="form-control input-field" id="firstName_reg" name="firstName"
-                                           required="required" placeholder="мое имя"/>
+                                           required="required" th:placeholder="#{input.placeholder.first.name}"/>
                                 </div>
                                 <div class="input-icons">
                                     <span class="input-group-addon"><i class="fa fa-user icon"></i></span>
                                     <input type="text" class="form-control input-field" id="lastName_reg" name="lastName"
-                                           required="required" placeholder="моя Фамилия"/>
+                                           required="required" th:placeholder="#{input.placeholder.last.name}"/>
                                 </div>
                                 <div class="input-icons">
                                     <span class="input-group-addon"><i class="fa fa-user icon"></i></span>
@@ -80,10 +80,10 @@
 
                                 <div class="row">
                                     <div class="col-6">
-                                        <input type="submit" class="btn btn-primary px-4" value="Регистрация"/>
+                                        <input type="submit" class="btn px-4 btn-warning" th:value="#{button.registration}"/>
                                     </div>
                                     <div class="col-6 text-right">
-                                        <input type="submit" id="toLogin" class="btn btn-link px-0 btn-reg" value="Уже есть Аккаунт?"/>
+                                        <input type="submit" id="toLogin" class="btn btn-link px-0 btn-reg text-muted" th:value="#{button.already.member}"/>
                                     </div>
                                 </div>
 

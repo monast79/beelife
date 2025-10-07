@@ -20,7 +20,7 @@
 <div th:replace="fragments/header :: header"></div>
 
 <div class="container-fluid" style="max-width: 1000px; margin: 0 auto;">
-    <h2 class="text-center">Users</h2>
+    <h2 class="text-center" th:text="#{header.list.of.users}">Users</h2>
 
     <div th:if="${message != null}" class="alert alert-success alert-dismissible fade show text-center message"
          role="alert">
@@ -37,16 +37,16 @@
                     <div class="search">
                         <i class="fa fa-search"></i>
                         <input id="keyword" type="search" name="keyword" th:value="${keyword}" required class="form-control"
-                               placeholder="Enter keyword"/>
-                        <button type="submit" class="btn btn-warning">Search</button>
+                               th:placeholder="#{input.placeholder.search}"/>
+                        <button type="submit" class="btn btn-warning" th:text="#{button.search}">Search</button>
                     </div>
                 </div>
                 <div class="col mt-2">
-                    <input type="reset" id="btnClear" class="btn btn-warning" value="Clear"/>
+                    <input type="reset" id="btnClear" class="btn btn-warning" th:value="#{button.clear}"/>
                 </div>
                 <div class="col input-group mt-2">
                     <div class="search">
-                        <label class="input-group-text" for="pageSize">Items per page:</label>
+                        <label class="input-group-text" for="pageSize" th:text="#{label.table.page.size}">Items per page:</label>
                     </div>
                     <select form="searchForm" name="size" th:value="${pageSize}" onchange="changePageSize()"
                             class="size-select bg-warning" id="pageSize">
@@ -62,10 +62,10 @@
         <table class="table table-bordered table-hover table-responsive-xl">
             <thead class="thead-light">
             <tr>
-                <th scope="col">Id</th>
-                <th scope="col">Username</th>
-                <th scope="col">Email</th>
-                <th scope="col">Actions</th>
+                <th scope="col" th:text="#{label.table.users.id}">Id</th>
+                <th scope="col" th:text="#{label.table.users.username}">username</th>
+                <th scope="col" th:text="#{label.table.users.email}">Email</th>
+                <th scope="col" th:text="#{label.table.users.actions}">Actions</th>
             </tr>
             </thead>
             <tbody class="table-group-divider">
@@ -74,11 +74,11 @@
                 <td>[[${user.username}]]</td>
                 <td>[[${user.email}]]</td>
                 <td>
-                    <a th:href="@{'/admin/home/user/' + ${user.id}}" title="Edit this user"
+                    <a th:href="@{'/admin/home/user/' + ${user.id}}" th:title="#{button.edit}"
                        class="fa-regular fa-pen-to-square icon-dark btn-update"
                        data-toggle="modal" data-target="#updateModal" th:user="${user.username}"></a>&nbsp;
                     <a th:href="@{'/admin/home/delete/' + ${user.id}}" th:username="${user.username}" id="btnDelete"
-                       title="Delete this user" class="fa-regular fa-trash-can icon-dark btn-delete"
+                       th:title="#{button.delete}" class="fa-regular fa-trash-can icon-dark btn-delete"
                        data-toggle="modal" data-target="#modal-warning"
                        th:attr="data-target='#modal-warning'+${user.id }"></a>
                 </td>
@@ -94,26 +94,26 @@
     <nav aria-label="Pagination" th:if="${totalPages > 0}">
         <ul class="pagination justify-content-center">
             <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
-                <a th:replace="fragments/paging :: paging(1, '<<', 'First Page')"></a>
+                <a th:replace="fragments/paging :: paging(1, '<<', #{pagination.first.page})"></a>
             </li>
             <li class="page-item font-weight-bold" th:classappend="${currentPage == 1} ? 'disabled'">
-                <a th:replace="fragments/paging :: paging(${currentPage - 1}, 'Prev', 'Previous Page')"></a>
+                <a th:replace="fragments/paging :: paging(${currentPage - 1}, #{pagination.prev}, #{pagination.previous.page})"></a>
             </li>
             <li class="page-item disabled" th:if="${currentPage - 2 > 1}">
                 <a class="page-link" href="#">...</a>
             </li>
             <li class="page-item" th:classappend="${page == currentPage} ? 'active'"
                 th:each="page : ${#numbers.sequence(currentPage > 2 ? currentPage - 2 : 1, currentPage + 2 < totalPages ? currentPage + 2 : totalPages)}">
-                <a th:replace="fragments/paging :: paging(${page}, ${page}, 'Page ' + ${page})"></a>
+                <a th:replace="fragments/paging :: paging(${page}, ${page}, #{pagination.page(${page})})"></a>
             </li>
             <li class="page-item disabled" th:if="${currentPage + 2 < totalPages}">
                 <a class="page-link" href="#">...</a>
             </li>
             <li class="page-item font-weight-bold" th:classappend="${currentPage == totalPages} ? 'disabled'">
-                <a th:replace="fragments/paging :: paging(${currentPage + 1},'Next', 'Next Page')"></a>
+                <a th:replace="fragments/paging :: paging(${currentPage + 1},#{pagination.next}, #{pagination.next.page})"></a>
             </li>
             <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
-                <a th:replace="fragments/paging :: paging(${totalPages}, '>>', 'Last Page')"></a>
+                <a th:replace="fragments/paging :: paging(${totalPages}, '>>', #{pagination.last.page})"></a>
             </li>
         </ul>
     </nav>
