@@ -1,13 +1,33 @@
 <header th:fragment="header">
     <nav class="navbar navbar-expand-md bg-custom navbar-dark">
-        <a class="navbar-brand text-black" th:href="@{/admin/home}">
-            BeeLife
-        </a>
-        <ul class="nav navbar-nav ms-auto">
-            <li class="nav-item">
-                <a th:href="@{/logout}" th:title="#{button.logout}"
-                   class="fa fa-sign-out icon-dark"></a>
-            </li>
-        </ul>
+        <div class="container-fluid">
+            <!-- Navbar brand -->
+            <a class="navbar-brand text-black" th:href="@{/admin/home}">
+                BeeLife
+            </a>
+            <!-- Icons -->
+            <ul class="navbar-nav d-flex flex-row me-1">
+
+                <li class="nav-item dropdown">
+                    <a data-mdb-dropdown-init class="nav-link dropdown-toggle text-black" href="#" id="navbarDropdown"
+                       role="button"
+                       data-toggle="dropdown" aria-expanded="false"> <i class="fi fi-ru"></i> </a>
+                    <!-- Dropdown menu -->
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li>
+                            <a class="dropdown-item text-black" href="?lang=ru"><i class="fi fi-ru"></i>Russian</a>
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item text-black" href="?lang=us"><i class="fi fi-us"></i> United States</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/logout}" th:title="#{button.logout}"
+                       class="fa fa-sign-out icon-dark"></a>
+                </li>
+            </ul>
+        </div>
     </nav>
 </header>
