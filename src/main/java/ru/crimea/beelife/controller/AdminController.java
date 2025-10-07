@@ -9,6 +9,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.crimea.beelife.dto.UserDto;
@@ -55,7 +57,7 @@ public class AdminController {
     }
 
     @GetMapping("/admin/home/delete/{id}")
-    public String handleDeleteUser(@PathVariable("id")  Long userId, Model model, RedirectAttributes redirectAttributes) {
+    public String handleDeleteUser(@PathVariable("id")  Long userId, RedirectAttributes redirectAttributes) {
         try {
         userService.deleteUser(userId);
             redirectAttributes.addFlashAttribute("message", "The User with id=" + userId + " has been deleted successfully!");
@@ -65,4 +67,22 @@ public class AdminController {
 
         return "redirect:/admin/home";
     }
-}
+
+    @GetMapping("/admin/home/user/{id}")
+    @ResponseBody
+    public UserDto getUser(@PathVariable("id")  Long userId) {
+        return userService.getUser(userId);
+    }
+
+
+    @PostMapping("/admin/home/updateUser")
+    public String updateUser(@ModelAttribute("userForm") @Validated UserDto userForm, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        try {
+            userService.updateUser(userForm);
+            redirectAttributes.addFlashAttribute("message", "The User " + userForm.getUsername() + " has been updated successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("message", e.getMessage());
+        }
+        return "redirect:/admin/home";
+    }
+    }

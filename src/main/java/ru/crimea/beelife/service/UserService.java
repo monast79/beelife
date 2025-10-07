@@ -66,9 +66,7 @@ public class UserService implements UserDetailsService {
             list = userDtos.subList(startItem, toIndex);
         }
 
-        Page<UserDto> page = new PageImpl<UserDto>(list, PageRequest.of(currentPage, pageSize), userDtos.size());
-
-        return page;
+        return new PageImpl<>(list, PageRequest.of(currentPage, pageSize), userDtos.size());
     }
 
     public boolean saveUser(UserDto userDto) {
@@ -90,10 +88,24 @@ public class UserService implements UserDetailsService {
         return true;
     }
 
-    public boolean deleteUser(Long userId) {
+    public void deleteUser(Long userId) {
+        userRepository.deleteById(userId);
+    }
+
+    public UserDto getUser(Long userId) {
         User user = userRepository.getReferenceById(userId);
-        user.setEnabled(false);
-        userRepository.save(user);
-        return true;
+        return userMapper.toDto(user);
+    }
+
+    public void updateUser(UserDto userDto) {
+        User userFromDB = userRepository.findByUsername(userDto.getUsername());
+
+        if (userFromDB == null) {
+            throw new UsernameNotFoundException("User not found");
+        } else {
+            userFromDB.setFirstName(userDto.getFirstName());
+            userFromDB.setLastName(userDto.getFirstName());
+        }
+        userRepository.save(userFromDB);
     }
 }

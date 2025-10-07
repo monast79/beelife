@@ -1,16 +1,6 @@
-.pagination {
-    display: inline-block;
-}
 
-.pagination a {
-    color: black;
-    float: left;
-    padding: 5px 5px;
-    text-decoration: none;
-}
+.active > .page-link {
+    background-color: #FFC107;
+    border-color: #FFC107;
 
-.pagination a.active {
-    background-color: gray;
-    color: white;
-    border-radius: 2px;
 }

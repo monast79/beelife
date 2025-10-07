@@ -1,27 +1,25 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0"/>
     <title>Beelife</title>
 
-    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.min.css}"/>
     <link rel="stylesheet" th:href="@{/styles/css/base.css}"/>
     <link rel="stylesheet" th:href="@{/styles/css/style.css}"/>
-    <link rel="stylesheet" th:href="@{/styles/css/animate-custom.css}"/>
-    <link rel="stylesheet" th:href="@{/styles/css/table.css}"/>
-    <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.min.css}"/>
+    <link rel="stylesheet" th:href="@{/styles/css/pagination.css}"/>
     <script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"></script>
     <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
 </head>
 
 
-
 <body>
 <div th:replace="fragments/header :: header"></div>
 
-<div class="container-fluid" style="max-width: 900px; margin: 0 auto;">
+<div class="container-fluid" style="max-width: 1000px; margin: 0 auto;">
     <h2 class="text-center">Users</h2>
 
     <div th:if="${message != null}" class="alert alert-success alert-dismissible fade show text-center message"
@@ -35,32 +33,33 @@
     <div class="my-3">
         <form th:action="@{/admin/home}" id="searchForm">
             <div class="row d-flex">
-                <div class="col-md-6 mt-2">
+                <div class="col mt-2">
                     <div class="search">
                         <i class="fa fa-search"></i>
                         <input id="keyword" type="search" name="keyword" th:value="${keyword}" required class="form-control"
-                               placeholder="Enter keyword">
-                        <button type="submit" class="btn btn-secondary">Search</button>
+                               placeholder="Enter keyword"/>
+                        <button type="submit" class="btn btn-warning">Search</button>
                     </div>
                 </div>
-                <div class="col-md-3 input-group mt-2">
-                    <div class="input-group-prepend">
+                <div class="col mt-2">
+                    <input type="reset" id="btnClear" class="btn btn-warning" value="Clear"/>
+                </div>
+                <div class="col input-group mt-2">
+                    <div class="search">
                         <label class="input-group-text" for="pageSize">Items per page:</label>
                     </div>
-                    <select form="searchForm" name="size" th:value="${pageSize}" onchange="changePageSize()" class="size-select"
-                            id="pageSize">
-                        <option th:each="s : ${ {3, 5, 10} }" th:value="${s}" th:text="${s}" th:selected="${s == pageSize}"></option>
+                    <select form="searchForm" name="size" th:value="${pageSize}" onchange="changePageSize()"
+                            class="size-select bg-warning" id="pageSize">
+                        <option th:each="s : ${ {3, 5, 10} }" th:value="${s}" th:text="${s}"
+                                th:selected="${s == pageSize}"></option>
                     </select>
-                </div>
-                <div class="col-md-1 mt-2">
-                    <button id="btnClear" class="btn btn-info">Clear</button>
                 </div>
             </div>
         </form>
     </div>
 
-    <div th:if="${users.size() > 0}">
-        <table class="table table-hover table-responsive-xl">
+    <div class="table-rounded" th:if="${users.size() > 0}">
+        <table class="table table-bordered table-hover table-responsive-xl">
             <thead class="thead-light">
             <tr>
                 <th scope="col">Id</th>
@@ -69,17 +68,19 @@
                 <th scope="col">Actions</th>
             </tr>
             </thead>
-            <tbody>
+            <tbody class="table-group-divider">
             <tr th:each="user : ${users}">
                 <th scope="row">[[${user.id}]]</th>
                 <td>[[${user.username}]]</td>
                 <td>[[${user.email}]]</td>
                 <td>
-                    <a th:href="@{'/admin/home/update/' + ${user.id}}" title="Edit this user"
-                       class="fa-regular fa-pen-to-square icon-dark"></a>
-                    &nbsp;
+                    <a th:href="@{'/admin/home/user/' + ${user.id}}" title="Edit this user"
+                       class="fa-regular fa-pen-to-square icon-dark btn-update"
+                       data-toggle="modal" data-target="#updateModal" th:user="${user.username}"></a>&nbsp;
                     <a th:href="@{'/admin/home/delete/' + ${user.id}}" th:username="${user.username}" id="btnDelete"
-                       title="Delete this user" class="fa-regular fa-trash-can icon-dark btn-delete"></a>
+                       title="Delete this user" class="fa-regular fa-trash-can icon-dark btn-delete"
+                       data-toggle="modal" data-target="#modal-warning"
+                       th:attr="data-target='#modal-warning'+${user.id }"></a>
                 </td>
             </tr>
             </tbody>
@@ -133,13 +134,50 @@
             </div>
 
             <div class="modal-footer">
-                <a type="button" id="yesBtn" class="btn btn-danger">Yes</a>
+                <a type="button" id="yesBtn" class="btn btn-warning">Yes</a>
                 <button type="button" class="btn btn-secondary btn-default" data-bs-dismiss="modal">No</button>
             </div>
         </div>
     </div>
 </div>
 
+<div class="editForm container">
+    <form method="post" autocomplete="on" th:object="${user}" th:action="@{/admin/home/updateUser}">
+        <div class="modal fade text-left" id="updateModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-bs-dismiss="modal">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <input id="username" name="username" type="text" hidden="hidden"/>
+                            <div class="input-icons">
+                                <i class="fa fa-user icon"></i>
+                                <input type="text" class="form-control input-field" id="firstName" name="firstName"
+                                       required="required" placeholder="мое имя"/>
+                            </div>
+                            <div class="input-icons">
+                                <i class="fa fa-user icon"></i>
+                                <input type="text" class="form-control input-field" id="lastName" name="lastName"
+                                       required="required" placeholder="моя Фамилия"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <input type="submit" id="changeBtn" class="btn btn-secondary" value="Сохранить"/>
+                        <input type="button" class="btn btn-secondary btn-default" data-bs-dismiss="modal"
+                               value="Отменить"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
 <div th:replace="fragments/footer :: footer"></div>
 
 <script type="text/javascript">
@@ -158,6 +196,20 @@
             e.preventDefault();
             $("#keyword").text("");
             window.location = "[[@{/admin/home}]]";
+        });
+
+        $(".btn-update").on("click", function (e) {
+            e.preventDefault();
+            link = $(this);
+            var href = link.attr("href")
+            user = link.attr("user");
+            // $(".editForm #changeBtn").attr("href", href);
+            $.get(href, function (user) {
+                $(".editForm #username").val(user.username)
+                $(".editForm #firstName").val(user.firstName)
+                $(".editForm #lastName").val(user.lastName)
+            });
+            $(".editForm #updateModal").modal('show');
         });
     });
 
