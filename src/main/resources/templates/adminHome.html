@@ -39,7 +39,8 @@
                 <div class="col mt-2">
                     <div class="search">
                         <i class="fa fa-search"></i>
-                        <input id="keyword" type="search" name="keyword" th:value="${keyword}" required class="form-control"
+                        <input id="keyword" type="search" name="keyword" th:value="${keyword}" required
+                               class="form-control"
                                th:placeholder="#{input.placeholder.search}"/>
                         <button type="submit" class="btn btn-warning" th:text="#{button.search}">Search</button>
                     </div>
@@ -49,7 +50,8 @@
                 </div>
                 <div class="col input-group mt-2">
                     <div class="search">
-                        <label class="input-group-text" for="pageSize" th:text="#{label.table.page.size}">Items per page:</label>
+                        <label class="input-group-text" for="pageSize" th:text="#{label.table.page.size}">Items per
+                            page:</label>
                     </div>
                     <select form="searchForm" name="size" th:value="${pageSize}" onchange="changePageSize()"
                             class="size-select bg-warning" id="pageSize">
@@ -206,7 +208,6 @@
             link = $(this);
             var href = link.attr("href")
             user = link.attr("user");
-            // $(".editForm #changeBtn").attr("href", href);
             $.get(href, function (user) {
                 $(".editForm #username").val(user.username)
                 $(".editForm #firstName").val(user.firstName)

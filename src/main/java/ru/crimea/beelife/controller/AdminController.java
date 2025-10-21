@@ -57,9 +57,9 @@ public class AdminController {
     }
 
     @GetMapping("/admin/home/delete/{id}")
-    public String handleDeleteUser(@PathVariable("id")  Long userId, RedirectAttributes redirectAttributes) {
+    public String handleDeleteUser(@PathVariable("id") Long userId, RedirectAttributes redirectAttributes) {
         try {
-        userService.deleteUser(userId);
+            userService.deleteUser(userId);
             redirectAttributes.addFlashAttribute("message", "The User with id=" + userId + " has been deleted successfully!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("message", e.getMessage());
@@ -70,7 +70,7 @@ public class AdminController {
 
     @GetMapping("/admin/home/user/{id}")
     @ResponseBody
-    public UserDto getUser(@PathVariable("id")  Long userId) {
+    public UserDto getUser(@PathVariable("id") Long userId) {
         return userService.getUser(userId);
     }
 
@@ -85,4 +85,4 @@ public class AdminController {
         }
         return "redirect:/admin/home";
     }
-    }
+}

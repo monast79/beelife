@@ -11,15 +11,15 @@
                 <li class="nav-item dropdown">
                     <a data-mdb-dropdown-init class="nav-link dropdown-toggle text-black" href="#" id="navbarDropdown"
                        role="button"
-                       data-toggle="dropdown" aria-expanded="false"> <i class="fi fi-ru"></i> </a>
+                       data-toggle="dropdown" aria-expanded="false">
+                        <i class="fi" th:classappend="${#strings.equals(param.lang, 'us')} ? fi-us : fi-ru" id="lang"></i> </a>
                     <!-- Dropdown menu -->
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                         <li>
-                            <a class="dropdown-item text-black" href="?lang=ru"><i class="fi fi-ru"></i>Russian</a>
+                            <a class="dropdown-item text-black" href="?lang=ru" id="lang-ru" th:inline="text"><i class="fi fi-ru"></i>[[#{language.ru}]]</a>
                         </li>
-
                         <li>
-                            <a class="dropdown-item text-black" href="?lang=us"><i class="fi fi-us"></i> United States</a>
+                            <a class="dropdown-item text-black" href="?lang=us" id="lang-us" th:inline="text"><i class="fi fi-us"></i>[[#{language.us}]]</a>
                         </li>
                     </ul>
                 </li>
