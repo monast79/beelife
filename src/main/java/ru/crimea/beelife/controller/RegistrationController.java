@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.crimea.beelife.dto.UserDto;
 import ru.crimea.beelife.service.SecurityService;
 import ru.crimea.beelife.service.UserService;
@@ -38,16 +39,18 @@ public class RegistrationController {
 
 
     @PostMapping("/registration")
-    public String registrationUser(@ModelAttribute("userForm") @Validated UserDto userForm, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) {
+    public String registrationUser(@ModelAttribute("userForm") @Validated UserDto userForm, BindingResult bindingResult, HttpServletRequest request, RedirectAttributes redirectAttributes) {
 
         userValidator.validate(userForm, bindingResult);
 
         if (bindingResult.hasErrors()) {
-            return "redirect:/login#toregister";
+            bindingResult.getAllErrors().forEach(error -> redirectAttributes.addFlashAttribute("message", error.getDefaultMessage()));
+            return "login?error";
         }
 
         if (!userService.saveUser(userForm)) {
-            return "redirect:/login#toregister";
+            redirectAttributes.addFlashAttribute("message", "Can not save to DB" );
+            return "login?error";
         }
         securityService.autologin(userForm.getUsername(), userForm.getPasswordConfirm(), request);
         return "redirect:/user/home";
