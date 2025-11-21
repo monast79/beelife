@@ -52,6 +52,7 @@ public class AdminController {
         model.addAttribute("sortField", sortField);
         model.addAttribute("sortDirection", sortDirection);
         model.addAttribute("reverseSortDirection", sortDirection.equals("asc") ? "desc" : "asc");
+        model.addAttribute("isAdmin", true);
 
         return "adminHome";
     }
@@ -59,7 +60,7 @@ public class AdminController {
     @GetMapping("/admin/home/delete/{id}")
     public String handleDeleteUser(@PathVariable("id") Long userId, RedirectAttributes redirectAttributes) {
         try {
-            userService.deleteUser(userId);
+            userService.deleteById(userId);
             redirectAttributes.addFlashAttribute("message", "The User with id=" + userId + " has been deleted successfully!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("message", e.getMessage());
@@ -71,7 +72,7 @@ public class AdminController {
     @GetMapping("/admin/home/user/{id}")
     @ResponseBody
     public UserDto getUser(@PathVariable("id") Long userId) {
-        return userService.getUser(userId);
+        return userService.findById(userId);
     }
 
 

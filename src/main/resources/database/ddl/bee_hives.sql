@@ -1,10 +1,7 @@
 -- DROP TABLE IF EXISTS beehives;
 
-CREATE TYPE hive_type AS ENUM
-    ('langstroth', 'dadant', 'lounger-dadant', 'lounger-rut');
-
-CREATE TYPE frame_type AS ENUM
-    ('eight', 'ten', 'twelve', 'fourteen', 'sixteen', 'twenty', 'twenty-four');
+CREATE TYPE public.hive_type AS ENUM
+    ('LANGSTROTH_RUT', 'DADANT', 'LOUNGER_DADANT', 'LOUNGER_RUT', 'NUCLEUS');
 
 CREATE TABLE IF NOT EXISTS beehives
 (

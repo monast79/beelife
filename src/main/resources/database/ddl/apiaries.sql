@@ -1,7 +1,7 @@
 -- DROP TABLE IF EXISTS apiaries;
 
 CREATE TYPE apiary_type AS ENUM
-    ('stationary', 'mobile');
+    ('STATIONARY', 'MOBILE');
 
 CREATE TABLE IF NOT EXISTS apiaries
 (

@@ -88,11 +88,11 @@ public class UserService implements UserDetailsService {
         return true;
     }
 
-    public void deleteUser(Long userId) {
+    public void deleteById(Long userId) {
         userRepository.deleteById(userId);
     }
 
-    public UserDto getUser(Long userId) {
+    public UserDto findById(Long userId) {
         User user = userRepository.getReferenceById(userId);
         return userMapper.toDto(user);
     }
@@ -104,7 +104,7 @@ public class UserService implements UserDetailsService {
             throw new UsernameNotFoundException("User not found");
         } else {
             userFromDB.setFirstName(userDto.getFirstName());
-            userFromDB.setLastName(userDto.getFirstName());
+            userFromDB.setLastName(userDto.getLastName());
         }
         userRepository.save(userFromDB);
     }

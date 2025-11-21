@@ -2,7 +2,7 @@
     <nav class="navbar navbar-expand-md bg-custom navbar-dark">
         <div class="container-fluid">
             <!-- Navbar brand -->
-            <a class="navbar-brand text-black" th:href="@{/admin/home}">
+            <a class="navbar-brand text-black" th:href="${isAdmin} ? @{/admin/home} : @{/user/home}">
                 BeeLife
             </a>
             <!-- Icons -->

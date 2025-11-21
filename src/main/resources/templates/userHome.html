@@ -1,21 +1,327 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
-      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+
 <head>
-    <title>Hello Admin!</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0"/>
+    <title>Beelife</title>
+
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/sidebars/">
+    <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.min.css}"/>
     <link rel="stylesheet" th:href="@{/styles/css/base.css}"/>
     <link rel="stylesheet" th:href="@{/styles/css/style.css}"/>
-    <link rel="stylesheet" th:href="@{/styles/css/animate-custom.css}"/>
+    <link rel="stylesheet" th:href="@{/styles/css/pagination.css}"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/7.5.0/css/flag-icons.min.css"/>
+    <script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+    <script type="text/javascript" th:src="@{/webjars/jquery/jquery.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 </head>
+
 <body>
-<div class="container">
-    <!-- Codrops top bar -->
-    <header>
-        <h1 th:inline="text">Hello <span th:remove="tag" sec:authentication="name">User!</span>!</h1>
-    </header>
-    <form th:action="@{/logout}" method="post">
-        <input type="submit" value="Sign Out"/>
+
+<div th:replace="fragments/header :: header"></div>
+<nav class="navbar navbar-expand-md navbar-light bg-light">
+</nav>
+<div class="container-fluid h-100">
+    <div class="row h-100">
+        <div class="col-3 bg-white p-3 d-flex flex-column" style="width: 280px;">
+            <a th:href="@{/user/home}"
+               class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
+                <svg class="bi me-2" width="30" height="24">
+                    <use xlink:href="#bootstrap"></use>
+                </svg>
+                <span class="fs-5 fw-semibold" th:text="#{header.apiary}">Пасека</span>
+            </a>
+            <ul class="list-unstyled ps-0">
+                <li class="mb-1">
+                    <input type="submit" id="addApiary" class="btn btn-toggle align-items-center rounded"
+                           aria-expanded="true"
+                           th:value="#{menu.add}"/>
+                </li>
+                <li class="mb-1" th:if="${apiaries != null && apiaries.size() > 0}">
+                    <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapsed"
+                            data-bs-target="#dashboard-collapse" aria-expanded="false"
+                            th:text="#{menu.apiary}"> Пасека
+                    </button>
+                    <div class="collapsed" id="dashboard-collapse">
+                        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                            <li th:each="apiaryItem : ${apiaries}">
+                                <a th:href="'/user/home/apiary/' + ${apiaryItem.id}" class="link-dark rounded"
+                                   th:id="${apiaryItem.getName()}" th:text="${apiaryItem.getName()}">Overview</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="col overflow-auto h-100 py-5">
+            <div th:if="${apiary != null}">
+                <h1 class="text-center" th:text="${apiary.name}">Пасека</h1>
+                <form th:action="'/user/home/apiary/' + ${apiary.id}" id="searchForm">
+                    <div class="row d-flex">
+                        <div class="col mt-2">
+                            <input type="submit" id="btnAddBeehive" class="btn btn-warning" th:value="#{button.add}"/>
+                        </div>
+                        <div class="col mt-2">
+                            <div class="search">
+                                <i class="fa fa-search"></i>
+                                <input id="keyword" type="search" name="keyword" th:value="${keyword}" required
+                                       class="form-control"
+                                       th:placeholder="#{input.placeholder.search}"/>
+                                <button type="submit" class="btn btn-warning" th:text="#{button.search}">Search</button>
+                            </div>
+                        </div>
+                        <div class="col mt-2">
+                            <input type="reset" id="btnClear" class="btn btn-warning" th:value="#{button.clear}"/>
+                        </div>
+                        <div class="col input-group mt-2">
+                            <div class="search">
+                                <label class="input-group-text" for="pageSize" th:text="#{label.table.page.size}">Items
+                                    per
+                                    page:</label>
+                            </div>
+                            <select form="searchForm" name="size" th:value="${pageSize}" onchange="changePageSize()"
+                                    class="size-select bg-warning" id="pageSize">
+                                <option th:each="s : ${ {3, 5, 10} }" th:value="${s}" th:text="${s}"
+                                        th:selected="${s == pageSize}"></option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+                <table class="table table-bordered table-hover table-responsive-xl">
+                    <thead class="thead-light">
+                    <tr>
+                        <th scope="col" th:text="#{label.table.beehives.name}">Id</th>
+                        <th scope="col" th:text="#{label.table.beehives.description}">username</th>
+                        <th scope="col" th:text="#{label.table.beehives.type}">Email</th>
+                        <th scope="col" th:text="#{label.table.beehives.frame}">Frame</th>
+                        <th scope="col" th:text="#{label.table.beehives.actions}">Actions</th>
+                    </tr>
+                    </thead>
+                    <div class="flex-shrink-0" th:if="${beehives != null && beehives.size() > 0}">
+                        <tbody class="table-group-divider">
+                        <tr th:each="beehive : ${beehives}">
+                            <th scope="row">[[${beehive.name}]]</th>
+                            <td>[[${beehive.description}]]</td>
+                            <td>[[#{'enum.beehive.type.'+${beehive.getType()}}]]</td>
+                            <td>[[${beehive.frame}]]</td>
+                            <td>
+                                <a th:href="@{'/user/home/beehive/' + ${beehive.id}}" th:title="#{button.edit}"
+                                   class="fa-regular fa-pen-to-square icon-dark btn-update"
+                                   data-toggle="modal" data-target="#saveModal"
+                                   th:id=" ${beehive.id}" th:name="${beehive.name}"
+                                   th:description="${beehive.description}"
+                                   th:type="${beehive.type}" th:frame="${beehive.frame}">
+                                </a>
+                                <a th:href="@{'/user/home/beehive/delete/' + ${beehive.id}}"
+                                   th:title="#{button.delete}" class="fa-regular fa-trash-can icon-dark btn-delete"
+                                   data-toggle="modal" data-target="#modal-warning"
+                                   th:name="${beehive.name}"
+                                   th:attr="data-target='#modal-warning'+${beehive.name}"></a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </div>
+                </table>
+                <nav aria-label="Pagination" th:if="${totalPages > 0}">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                            <a th:replace="fragments/pagingBeehives :: paging(1, '<<', #{pagination.first.page})"></a>
+                        </li>
+                        <li class="page-item font-weight-bold" th:classappend="${currentPage == 1} ? 'disabled'">
+                            <a th:replace="fragments/pagingBeehives :: paging(${currentPage - 1}, #{pagination.prev}, #{pagination.previous.page})"></a>
+                        </li>
+                        <li class="page-item disabled" th:if="${currentPage - 2 > 1}">
+                            <a class="page-link" href="#">...</a>
+                        </li>
+                        <li class="page-item" th:classappend="${page == currentPage} ? 'active'"
+                            th:each="page : ${#numbers.sequence(currentPage > 2 ? currentPage - 2 : 1, currentPage + 2 < totalPages ? currentPage + 2 : totalPages)}">
+                            <a th:replace="fragments/pagingBeehives :: paging(${page}, ${page}, #{pagination.page(${page})})"></a>
+                        </li>
+                        <li class="page-item disabled" th:if="${currentPage + 2 < totalPages}">
+                            <a class="page-link" href="#">...</a>
+                        </li>
+                        <li class="page-item font-weight-bold"
+                            th:classappend="${currentPage == totalPages} ? 'disabled'">
+                            <a th:replace="fragments/pagingBeehives :: paging(${currentPage + 1},#{pagination.next}, #{pagination.next.page})"></a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                            <a th:replace="fragments/pagingBeehives :: paging(${totalPages}, '>>', #{pagination.last.page})"></a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <form class="d-none flex-shrink-0" method="post" autocomplete="on" th:action="@{/user/home/apiary/add}"
+                  id="createApiary">
+                <h1 class="text-center" th:text="#{header.apiary}"> Apiary </h1>
+                <div class="input-icons">
+                    <span class="input-group-addon"><i class="fa fa-home icon"></i></span>
+                    <input type="text" class="form-control input-field" id="apiary_name" name="name"
+                           required="required" th:placeholder="#{input.placeholder.apiary.name}"/>
+                </div>
+
+                <div class="input-icons">
+                    <span class="input-group-addon"><i class="fa fa-home icon"></i></span>
+                    <input type="text" class="form-control input-field" id="apiary_description" name="description"
+                           required="required" th:placeholder="#{input.placeholder.apiary.description}"/>
+                </div>
+
+                <div class="col input-icons input-group mt-2">
+                    <span class="input-group-addon"><i class="fa fa-home icon"></i></span>
+                    <div class="form-control input-field"
+                         th:each="type : ${T(ru.crimea.beelife.model.ApiaryType).values()}">
+                        <input name="type" type="radio" th:value="${type.name()}"
+                               th:text="#{'enum.apiary.type.'+${type.getApiaryType()}}"/>
+                    </div>
+
+                </div>
+                <input id="userId" name="userId" th:value="${userId}" type="text" hidden="hidden"/>
+                <div class="row">
+                    <div class="col-6">
+                        <input type="submit" class="btn px-4 btn-warning" th:value="#{button.add}"/>
+                    </div>
+                    <div class="col-6 text-right">
+                        <input type="reset" class="btn btn-link px-0 btn-reg text-muted"
+                               th:value="#{button.clear}"/>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+        <div class="col-3 bg-white" th:if="${apiaries != null && apiaries.size() > 0}" id="nextApiary"> Next</div>
+    </div>
+</div>
+
+<div class="saveForm container" th:if="${apiary != null}">
+    <form method="post" autocomplete="on" th:action="@{/user/home/beehive/save}" th:object="${beehive}">
+        <div class="modal fade text-left" id="saveModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-bs-dismiss="modal">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <input type="text" class="form-control"
+                                   th:value="${beehive?.getId()}" id="id" name="id" hidden="hidden"/>
+                            <input type="text" class="form-control"
+                                   th:value="${beehive == null ? apiary.getId() : beehive.getApiaryId()}" id="apiaryId"
+                                   name="apiaryId" hidden="hidden"/>
+                            <div class="input-icons">
+                                <i class="fa fa-home icon"></i>
+                                <input type="text" class="form-control input-field" id="name" name="name"
+                                       th:value="${beehive?.getName()}"
+                                       required="required" th:placeholder="#{input.placeholder.beehive.name}"/>
+                            </div>
+                            <div class="input-icons">
+                                <i class="fa fa-home icon"></i>
+                                <input type="text" class="form-control input-field" id="description" name="description"
+                                       required="required" th:placeholder="#{input.placeholder.beehive.description}"/>
+                            </div>
+                            <div class="form-control input-field">
+                                <select id="type" name="type">
+                                    <option th:each="type : ${T(ru.crimea.beelife.model.HiveType).values()}"
+                                            th:value="${type.name()}"
+                                            th:text="#{'enum.beehive.type.'+${type}}">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="form-control input-field">
+                                <select id="frame" name="frame">
+                                    <option th:each="frame : ${T(ru.crimea.beelife.model.Frame).values()}"
+                                            th:value="${frame.getFrameType()}"
+                                            th:text="${frame.getFrameType()}">
+                                    </option>
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <input type="submit" id="changeBtn" class="btn btn-secondary" value="Сохранить"/>
+                        <input type="button" class="btn btn-secondary btn-default" data-bs-dismiss="modal"
+                               value="Отменить"/>
+                    </div>
+                </div>
+            </div>
+        </div>
     </form>
 </div>
+
+<div class="modal fade text-center" id="confirmModal" th:if="${apiary != null}">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Confirmation</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <span id="confirmText"></span>
+            </div>
+
+            <div class="modal-footer">
+                <a type="button" id="yesBtn" class="btn btn-warning">Yes</a>
+                <button type="button" class="btn btn-secondary btn-default" data-bs-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex" th:replace="fragments/footer :: footer"></div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#addApiary").on("click", function (e) {
+            e.preventDefault();
+            $("#createApiary").removeClass("d-none");
+            $("#nextApiary").addClass("d-none");
+        });
+
+        $("#btnClear").on("click", function (e) {
+            e.preventDefault();
+            $("#keyword").text("");
+            window.location = "[[@{/admin/home}]]";
+        });
+
+        $("#btnAddBeehive").on("click", function (e) {
+            e.preventDefault();
+            link = $(this);
+            $(".saveForm #saveModal").modal('show');
+        });
+
+        $(".btn-delete").on("click", function (e) {
+            e.preventDefault();
+            link = $(this);
+            name = link.attr("name");
+            $("#yesBtn").attr("href", link.attr("href"));
+            $("#confirmText").html("Do you want to delete the Beehive \<strong\>" + name + "\<\/strong\>?");
+            $("#confirmModal").modal('show');
+        });
+
+        $(".btn-update").on("click", function (e) {
+            e.preventDefault();
+            link = $(this);
+            $(".saveForm #id").val(link.attr("id"))
+            $(".saveForm #name").val(link.attr("name"))
+            $(".saveForm #description").val(link.attr("description"))
+            $(".saveForm #type").val(link.attr("type"))
+            $(".saveForm #frame").val(link.attr("frame"))
+            $(".saveForm #saveModal").modal('show');
+        });
+    });
+
+</script>
+
 </body>
+
 </html>
