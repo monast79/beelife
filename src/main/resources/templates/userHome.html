@@ -98,7 +98,7 @@
 
             </form>
         </div>
-        <div class="col-3 bg-white" th:if="${apiaries != null && apiaries.size() > 0}" id="nextApiary"> Next</div>
+<!--        <div class="col-3 bg-white" th:if="${apiaries != null && apiaries.size() > 0}" id="nextApiary"> Next</div>-->
     </div>
 </div>
 
@@ -150,6 +150,9 @@
         });
     });
 
+    function changePageSize() {
+        $("#searchForm").submit();
+    }
 </script>
 
 </body>

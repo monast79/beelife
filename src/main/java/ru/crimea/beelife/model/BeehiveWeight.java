@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 @EqualsAndHashCode(callSuper = false)
 @Data
@@ -22,7 +22,7 @@ public class BeehiveWeight {
     @JoinColumn(name = "hive_id")
     private Beehive beehive;
 
-    private Date measure;
+    private Timestamp measure;
 
     @Column(
             columnDefinition = "NUMERIC(5,2)")

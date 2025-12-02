@@ -1,10 +1,7 @@
 <div th:fragment="beehiveWeights" th:if="${beehive != null}">
     <h1 class="text-center" th:text="${beehive.name}">Улей</h1>
-    <form th:action="'/user/home/beehive/' + ${beehive.id}" id="searchForm">
+    <form th:action="'/user/home/beehive/details/' + ${beehive.id}" id="searchForm">
         <div class="row d-flex">
-            <div class="col mt-2">
-                <input type="reset" id="btnClear" class="btn btn-warning" th:value="#{button.clear}"/>
-            </div>
             <div class="col input-group mt-2">
                 <div class="search">
                     <label class="input-group-text" for="pageSize" th:text="#{label.table.page.size}">Items

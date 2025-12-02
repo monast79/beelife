@@ -7,7 +7,7 @@ import ru.crimea.beelife.model.BeehiveWeight;
 import java.util.List;
 
 @Repository
-public interface BeehiveWeightRepository   extends JpaRepository<BeehiveWeight, Long> {
+public interface BeehiveWeightRepository extends JpaRepository<BeehiveWeight, Long> {
 
     List<BeehiveWeight> getAllByBeehiveId(Long beehiveId);
 }
