@@ -3,6 +3,8 @@ package ru.crimea.beelife.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.sql.Timestamp;
 
@@ -20,6 +22,7 @@ public class BeehiveWeight {
 
     @ManyToOne
     @JoinColumn(name = "hive_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Beehive beehive;
 
     private Timestamp measure;

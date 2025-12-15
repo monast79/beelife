@@ -1,4 +1,4 @@
-<div th:fragment="beehives" th:if="${apiary != null}">
+<div th:fragment="beehives" th:if="${apiary != null}" id = "beehives">
     <h1 class="text-center" th:text="${apiary.name}">Пасека</h1>
     <form th:action="'/user/home/apiary/' + ${apiary.id}" id="searchForm">
         <div class="row d-flex">

@@ -81,7 +81,7 @@
                     <div class="form-control input-field"
                          th:each="type : ${T(ru.crimea.beelife.model.ApiaryType).values()}">
                         <input name="type" type="radio" th:value="${type.name()}"
-                               th:text="#{'enum.apiary.type.'+${type.getApiaryType()}}"/>
+                               th:text="#{'enum.apiary.type.'+${type.name()}}"/>
                     </div>
 
                 </div>
@@ -115,6 +115,8 @@
             e.preventDefault();
             $("#createApiary").removeClass("d-none");
             $("#nextApiary").addClass("d-none");
+            $("#beehives").addClass("d-none");
+            $("#beehiveeights").addClass("d-none");
         });
 
         $("#btnClear").on("click", function (e) {
