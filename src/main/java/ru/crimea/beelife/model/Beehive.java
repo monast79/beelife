@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.JdbcType;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 @EqualsAndHashCode(callSuper = false)
@@ -24,6 +26,7 @@ public class Beehive {
 
     @ManyToOne
     @JoinColumn(name = "apiary_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Apiary apiary;
 
     @Enumerated(EnumType.STRING)

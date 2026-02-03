@@ -27,49 +27,19 @@
 </nav>
 <div class="container-fluid h-100">
     <div class="row h-100">
-        <div class="col-3 bg-white p-3 d-flex flex-column" style="width: 280px;">
-            <a th:href="@{/user/home}"
-               class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
-                <svg class="bi me-2" width="30" height="24">
-                    <use xlink:href="#bootstrap"></use>
-                </svg>
-                <span class="fs-5 fw-semibold" th:text="#{header.apiary}">Пасека</span>
-            </a>
-            <ul class="list-unstyled ps-0">
-                <li class="mb-1">
-                    <input type="submit" id="addApiary" class="btn btn-toggle align-items-center rounded"
-                           aria-expanded="true"
-                           th:value="#{menu.add}"/>
-                </li>
-                <li class="mb-1" th:if="${apiaries != null && apiaries.size() > 0}">
-                    <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapsed"
-                            data-bs-target="#dashboard-collapse" aria-expanded="false"
-                            th:text="#{menu.apiary}"> Пасека
-                    </button>
-                    <div class="collapsed" id="dashboard-collapse">
-                        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                            <li th:each="apiaryItem : ${apiaries}">
-                                <a th:href="'/user/home/apiary/' + ${apiaryItem.id}" class="link-dark rounded"
-                                   th:id="${apiaryItem.getName()}" th:text="${apiaryItem.getName()}">Overview</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-            </ul>
-        </div>
         <div class="col overflow-auto h-100 py-5">
 
             <div class="d-flex" th:replace="fragments/beehives :: beehives"></div>
             <div class="d-flex" th:replace="fragments/beehiveWeights :: beehiveWeights"></div>
             <div class="d-flex" th:replace="fragments/saveApiary :: saveApiary"></div>
         </div>
-<!--        <div class="col-3 bg-white" th:if="${apiaries != null && apiaries.size() > 0}" id="nextApiary"> Next</div>-->
+        <!--        <div class="col-3 bg-white" th:if="${apiaries != null && apiaries.size() > 0}" id="nextApiary"> Next</div>-->
     </div>
 </div>
 
 <div class="d-flex" th:replace="fragments/saveBeehive :: saveBeehive"></div>
 
-<div class="d-flex" th:replace="fragments/deleteBeehive :: deleteBeehive"></div>
+<div class="d-flex" th:replace="fragments/delete :: delete"></div>
 
 <div class="d-flex" th:replace="fragments/footer :: footer"></div>
 
@@ -99,9 +69,9 @@
         $(".btn-delete").on("click", function (e) {
             e.preventDefault();
             link = $(this);
-            name = link.attr("name");
+            message = link.attr("message");
             $("#yesBtn").attr("href", link.attr("href"));
-            $("#confirmText").html("Do you want to delete the Beehive \<strong\>" + name + "\<\/strong\>?");
+            $("#confirmText").html(message);
             $("#confirmModal").modal('show');
         });
 
@@ -115,6 +85,8 @@
             $(".saveForm #frame").val(link.attr("frame"))
             $(".saveForm #saveModal").modal('show');
         });
+
+        $(".dropdown-toggle").dropdown();
     });
 
     function changePageSize() {

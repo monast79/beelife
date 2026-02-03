@@ -8,6 +8,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.crimea.beelife.dto.ApiaryDto;
@@ -36,4 +37,15 @@ public class ApiaryController {
         return "redirect:/user/home";
     }
 
+    @GetMapping("/user/home/apiary/delete/{id}")
+    public String handleDeleteApiary(@PathVariable("id") Long apiaryId, RedirectAttributes redirectAttributes) {
+        try {
+            apiaryService.deleteById(apiaryId);
+            redirectAttributes.addFlashAttribute("message", "The Beehive with id=" + apiaryId + " has been deleted successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("message", e.getMessage());
+        }
+
+        return "redirect:/user/home";
+    }
 }

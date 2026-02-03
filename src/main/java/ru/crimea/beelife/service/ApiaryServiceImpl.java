@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.crimea.beelife.dto.ApiaryDto;
 import ru.crimea.beelife.mapper.ApiaryMapper;
 import ru.crimea.beelife.model.Apiary;
+import ru.crimea.beelife.model.Beehive;
 import ru.crimea.beelife.model.User;
 import ru.crimea.beelife.repository.ApiaryRepository;
 import ru.crimea.beelife.repository.UserRepository;
@@ -46,5 +47,10 @@ public class ApiaryServiceImpl implements ApiaryService {
     public ApiaryDto findById(Long apiaryId) {
         Apiary apiary = apiaryRepository.findApiaryById(apiaryId);
         return apiaryMapper.toDto(apiary);
+    }
+
+    @Override
+    public void deleteById(Long apiaryId) {
+        apiaryRepository.deleteById(apiaryId);
     }
 }

@@ -88,7 +88,7 @@ public class BeehiveController {
     }
 
     @GetMapping("/user/home/beehive/delete/{id}")
-    public String handleDeleteUser(@PathVariable("id") Long beehiveId, RedirectAttributes redirectAttributes) {
+    public String handleDeleteBeehive(@PathVariable("id") Long beehiveId, RedirectAttributes redirectAttributes) {
         Long apiaryId = beehiveService.findById(beehiveId).getApiaryId();
         try {
             beehiveService.deleteById(beehiveId);

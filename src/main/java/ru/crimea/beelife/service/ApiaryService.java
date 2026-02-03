@@ -11,5 +11,7 @@ public interface ApiaryService {
     boolean saveApiary(ApiaryDto apiaryDto);
 
     ApiaryDto findById(Long apiaryId);
+
+    void deleteById(Long beehiveId);
 }
 
