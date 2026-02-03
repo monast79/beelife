@@ -1,0 +1,43 @@
+<div th:fragment="saveApiary" id="saveApiary">
+    <form class="d-none flex-shrink-0" method="post" autocomplete="on" th:action="@{/user/home/apiary/add}"
+          id="createApiary">
+        <h1 class="text-center" th:text="#{header.apiary}"> Apiary </h1>
+        <div class="input-icons">
+            <span class="input-group-addon"><i class="fa fa-home icon"></i></span>
+            <input type="text" class="form-control input-field" id="apiary_name" name="name"
+                   required="required" th:placeholder="#{input.placeholder.apiary.name}"/>
+        </div>
+
+        <div class="input-icons">
+            <span class="input-group-addon"><i class="fa fa-home icon"></i></span>
+            <input type="text" class="form-control input-field" id="apiary_description" name="description"
+                   required="required" th:placeholder="#{input.placeholder.apiary.description}"/>
+        </div>
+
+        <div class="col input-group mt-2">
+            <div class="radio-form"
+                 th:each="type : ${T(ru.crimea.beelife.model.ApiaryType).values()}">
+                <label class="radio-control">
+                    <input name="type" type="radio" th:value="${type.name()}"/>
+                    <span class="radio-input">
+                         <i class="fa fa-truck" th:if="${type == T(ru.crimea.beelife.model.ApiaryType).mobile}"></i>
+                         <i class="fa fa-home" th:if="${type == T(ru.crimea.beelife.model.ApiaryType).stationary}"></i>
+                        <span th:text="#{'enum.apiary.type.'+${type.name()}}">ApiaryType</span>
+                     </span>
+                </label>
+            </div>
+
+        </div>
+        <input id="userId" name="userId" th:value="${userId}" type="text" hidden="hidden"/>
+        <div class="row">
+            <div class="col-6">
+                <input type="submit" class="btn px-4 btn-warning" th:value="#{button.add}"/>
+            </div>
+            <div class="col-6 text-right">
+                <input type="reset" class="btn btn-link px-0 btn-reg text-muted"
+                       th:value="#{button.clear}"/>
+            </div>
+        </div>
+
+    </form>
+</div>

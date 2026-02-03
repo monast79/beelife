@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import ru.crimea.beelife.aop.NotLogging;
 import ru.crimea.beelife.config.MyPasswordEncoder;
 import ru.crimea.beelife.dto.UserDto;
 import ru.crimea.beelife.mapper.UserMapper;
@@ -25,7 +26,6 @@ import java.util.List;
 @Slf4j
 public class UserService implements UserDetailsService {
 
-
     @Autowired
     UserRepository userRepository;
     @Autowired
@@ -36,6 +36,7 @@ public class UserService implements UserDetailsService {
     private UserMapper userMapper;
 
     @Override
+    @NotLogging
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username);
 
@@ -92,6 +93,7 @@ public class UserService implements UserDetailsService {
         userRepository.deleteById(userId);
     }
 
+    @NotLogging
     public UserDto findById(Long userId) {
         User user = userRepository.getReferenceById(userId);
         return userMapper.toDto(user);

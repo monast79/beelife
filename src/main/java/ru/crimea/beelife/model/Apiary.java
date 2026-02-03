@@ -22,6 +22,8 @@ public class Apiary {
 
     private String name;
 
+    private String description;
+
     @Enumerated(EnumType.STRING)
     @JdbcType(PostgreSQLEnumJdbcType.class)
     private ApiaryType type;
