@@ -14,6 +14,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.crimea.beelife.dto.ApiaryDto;
 import ru.crimea.beelife.dto.BeehiveDto;
 import ru.crimea.beelife.dto.BeehiveWeightDto;
+import ru.crimea.beelife.exception.PermissionDeniedException;
 import ru.crimea.beelife.model.User;
 import ru.crimea.beelife.service.ApiaryService;
 import ru.crimea.beelife.service.BeehiveService;
@@ -45,33 +46,37 @@ public class BeehiveController {
 
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(order));
 
-        Long userId = ((User) authentication.getPrincipal()).getId();
-        ApiaryDto apiary = apiaryService.findById(apiaryId);
-        Page<BeehiveDto> apiaryPage = beehiveService.getBeehiveByApiaryId(apiaryId, pageable, keyword);
 
-        if (keyword != null) {
-            model.addAttribute("keyword", keyword);
+        try {
+            Long userId = ((User) authentication.getPrincipal()).getId();
+            ApiaryDto apiary = apiaryService.findById(apiaryId);
+            Page<BeehiveDto> apiaryPage = apiaryService.getBeehivesByApiaryId(apiaryId, pageable, keyword);
+
+            if (keyword != null) {
+                model.addAttribute("keyword", keyword);
+            }
+            model.addAttribute("apiaryPage", apiaryPage);
+
+            model.addAttribute("beehives", apiaryPage.getContent());
+            model.addAttribute("currentPage", apiaryPage.getNumber() + 1);
+            model.addAttribute("totalItems", apiaryPage.getTotalElements());
+            model.addAttribute("totalPages", apiaryPage.getTotalPages());
+            model.addAttribute("pageSize", size);
+            model.addAttribute("sortField", sortField);
+            model.addAttribute("sortDirection", sortDirection);
+            model.addAttribute("reverseSortDirection", sortDirection.equals("asc") ? "desc" : "asc");
+            model.addAttribute("apiaries", apiaryService.getApiariesByUserId(userId));
+            model.addAttribute("userId", userId);
+            model.addAttribute("apiary", apiary);
+        } catch (Exception e) {
+            model.addAttribute("message", e.getMessage());
         }
-
-        model.addAttribute("apiaryPage", apiaryPage);
-
-        model.addAttribute("beehives", apiaryPage.getContent());
-        model.addAttribute("currentPage", apiaryPage.getNumber() + 1);
-        model.addAttribute("totalItems", apiaryPage.getTotalElements());
-        model.addAttribute("totalPages", apiaryPage.getTotalPages());
-        model.addAttribute("pageSize", size);
-        model.addAttribute("sortField", sortField);
-        model.addAttribute("sortDirection", sortDirection);
-        model.addAttribute("reverseSortDirection", sortDirection.equals("asc") ? "desc" : "asc");
-        model.addAttribute("apiaries", apiaryService.getApiariesByUserId(userId));
-        model.addAttribute("userId", userId);
-        model.addAttribute("apiary", apiary);
         return "userHome";
     }
 
     @GetMapping("/user/home/beehive/{id}")
     @ResponseBody
-    public BeehiveDto getBeehive(@PathVariable("id") Long beehiveId) {
+    public BeehiveDto getBeehive(@PathVariable("id") Long beehiveId) throws PermissionDeniedException {
         return beehiveService.findById(beehiveId);
     }
 
@@ -89,8 +94,9 @@ public class BeehiveController {
 
     @GetMapping("/user/home/beehive/delete/{id}")
     public String handleDeleteBeehive(@PathVariable("id") Long beehiveId, RedirectAttributes redirectAttributes) {
-        Long apiaryId = beehiveService.findById(beehiveId).getApiaryId();
+        Long apiaryId = null;
         try {
+            apiaryId = beehiveService.findById(beehiveId).getApiaryId();
             beehiveService.deleteById(beehiveId);
             redirectAttributes.addFlashAttribute("message", "The Beehive with id=" + beehiveId + " has been deleted successfully!");
         } catch (Exception e) {
@@ -112,25 +118,29 @@ public class BeehiveController {
         Sort.Direction direction = sortDirection.equals("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Sort.Order order = new Sort.Order(direction, sortField);
 
-        BeehiveDto beehive = beehiveService.findById(beehiveId);
 
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(order));
+        try {
+            BeehiveDto beehive = beehiveService.findById(beehiveId);
 
-        Long userId = ((User) authentication.getPrincipal()).getId();
-        Page<BeehiveWeightDto> beehivePage = beehiveWeightService.getAllByBeehiveId(beehiveId, pageable);
+            Pageable pageable = PageRequest.of(page - 1, size, Sort.by(order));
 
-        model.addAttribute("beehivePage", beehivePage);
-        model.addAttribute("beehiveWeights", beehivePage.getContent());
-        model.addAttribute("currentPage", beehivePage.getNumber() + 1);
-        model.addAttribute("totalItems", beehivePage.getTotalElements());
-        model.addAttribute("totalPages", beehivePage.getTotalPages());
-        model.addAttribute("pageSize", size);
-        model.addAttribute("sortField", sortField);
-        model.addAttribute("sortDirection", sortDirection);
-        model.addAttribute("reverseSortDirection", sortDirection.equals("asc") ? "desc" : "asc");
-        model.addAttribute("apiaries", apiaryService.getApiariesByUserId(userId));
-        model.addAttribute("userId", userId);
-        model.addAttribute("beehive", beehive);
+            Long userId = ((User) authentication.getPrincipal()).getId();
+            Page<BeehiveWeightDto> beehivePage = beehiveWeightService.getAllByBeehiveId(beehiveId, pageable);
+            model.addAttribute("beehivePage", beehivePage);
+            model.addAttribute("beehiveWeights", beehivePage.getContent());
+            model.addAttribute("currentPage", beehivePage.getNumber() + 1);
+            model.addAttribute("totalItems", beehivePage.getTotalElements());
+            model.addAttribute("totalPages", beehivePage.getTotalPages());
+            model.addAttribute("pageSize", size);
+            model.addAttribute("sortField", sortField);
+            model.addAttribute("sortDirection", sortDirection);
+            model.addAttribute("reverseSortDirection", sortDirection.equals("asc") ? "desc" : "asc");
+            model.addAttribute("apiaries", apiaryService.getApiariesByUserId(userId));
+            model.addAttribute("userId", userId);
+            model.addAttribute("beehive", beehive);
+        } catch (Exception e) {
+            model.addAttribute("message", e.getMessage());
+        }
         return "userHome";
     }
 }

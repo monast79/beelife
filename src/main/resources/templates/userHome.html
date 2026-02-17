@@ -26,6 +26,13 @@
 <nav class="navbar navbar-expand-md navbar-light bg-light">
 </nav>
 <div class="container-fluid h-100">
+    <div th:if="${message != null}" class="alert alert-warning alert-dismissible fade show text-center message"
+         role="alert">
+        [[${message}]]
+        <button type="button" class="close btn-sm" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
     <div class="row h-100">
         <div class="col overflow-auto h-100 py-5">
 
@@ -36,8 +43,6 @@
         <!--        <div class="col-3 bg-white" th:if="${apiaries != null && apiaries.size() > 0}" id="nextApiary"> Next</div>-->
     </div>
 </div>
-
-<div class="d-flex" th:replace="fragments/saveBeehive :: saveBeehive"></div>
 
 <div class="d-flex" th:replace="fragments/delete :: delete"></div>
 

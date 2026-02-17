@@ -12,7 +12,7 @@ import java.sql.Timestamp;
 @Data
 @Entity
 @Table(name = "hive_weights")
-public class BeehiveWeight {
+public class BeehiveWeight extends BasePersistableObject{
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "weight_seq")

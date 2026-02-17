@@ -3,9 +3,8 @@ package ru.crimea.beelife.dto;
 import lombok.Data;
 
 @Data
-public class UserDto {
+public class UserDto extends BaseDto{
 
-    private Long id;
     private String username;
     private String password;
     private String passwordConfirm;

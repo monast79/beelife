@@ -12,7 +12,7 @@ import java.util.Set;
 @Data
 @Entity
 @Table(name = "apiaries")
-public class Apiary {
+public class Apiary extends BasePersistableObject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "apiary_seq")

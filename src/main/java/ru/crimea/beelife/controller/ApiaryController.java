@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.crimea.beelife.dto.ApiaryDto;
+import ru.crimea.beelife.exception.PermissionDeniedException;
 import ru.crimea.beelife.model.User;
 import ru.crimea.beelife.service.ApiaryService;
 
@@ -23,14 +24,18 @@ public class ApiaryController {
 
     @GetMapping("/user/home")
     public String getApiaries(Authentication authentication, Model model) {
-        Long userId = ((User) authentication.getPrincipal()).getId();
-        model.addAttribute("apiaries", apiaryService.getApiariesByUserId(userId));
-        model.addAttribute("userId", userId);
+        try {
+            Long userId = ((User) authentication.getPrincipal()).getId();
+            model.addAttribute("apiaries", apiaryService.getApiariesByUserId(userId));
+            model.addAttribute("userId", userId);
+        } catch (Exception e) {
+            model.addAttribute("message", e.getMessage());
+        }
         return "userHome";
     }
 
     @PostMapping("/user/home/apiary/add")
-    public String addApiary(@ModelAttribute("apiaryForm") @Validated ApiaryDto apiaryForm, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+    public String addApiary(@ModelAttribute("apiaryForm") @Validated ApiaryDto apiaryForm, BindingResult bindingResult, RedirectAttributes redirectAttributes) throws PermissionDeniedException {
         if (!apiaryService.saveApiary(apiaryForm)) {
             redirectAttributes.addFlashAttribute("message", "Can not save to DB" );
         }
@@ -41,7 +46,7 @@ public class ApiaryController {
     public String handleDeleteApiary(@PathVariable("id") Long apiaryId, RedirectAttributes redirectAttributes) {
         try {
             apiaryService.deleteById(apiaryId);
-            redirectAttributes.addFlashAttribute("message", "The Beehive with id=" + apiaryId + " has been deleted successfully!");
+            redirectAttributes.addFlashAttribute("message", "The Apiary with id=" + apiaryId + " has been deleted successfully!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("message", e.getMessage());
         }

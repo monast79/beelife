@@ -1,7 +1,13 @@
 package ru.crimea.beelife.dto;
 
+import lombok.Data;
+
 import java.sql.Timestamp;
 import java.util.Date;
 
-public record BeehiveWeightDto(Long id, Long beehiveId, Date measure, Double weight) {
+@Data
+public class BeehiveWeightDto extends BaseDto {
+    private Long beehiveId;
+    private Date measure;
+    private Double weight;
 }

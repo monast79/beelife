@@ -22,6 +22,7 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_seq")
     @SequenceGenerator(name = "users_seq", sequenceName = "users_seq_id", allocationSize = 1)
     @Column(updatable = false)
+    @EqualsAndHashCode.Include
     private  Long id;
 
     private String username;

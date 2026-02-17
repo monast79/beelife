@@ -9,6 +9,7 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+import ru.crimea.beelife.helper.UserHelper;
 
 @Configuration
 public class MvcConfig implements WebMvcConfigurer {
@@ -46,5 +47,10 @@ public class MvcConfig implements WebMvcConfigurer {
     @Bean
     public LocaleResolver localeResolver() {
         return new SessionLocaleResolver();
+    }
+
+    @Bean
+    public UserHelper userHelper() {
+        return new UserHelper();
     }
 }

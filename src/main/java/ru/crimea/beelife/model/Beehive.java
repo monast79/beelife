@@ -12,7 +12,7 @@ import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 @Data
 @Entity
 @Table(name = "beehives")
-public class Beehive {
+public class Beehive extends BasePersistableObject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "beehive_seq")
