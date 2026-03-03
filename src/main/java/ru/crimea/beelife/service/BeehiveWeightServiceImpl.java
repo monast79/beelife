@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import ru.crimea.beelife.aop.DataAccess;
 import ru.crimea.beelife.dto.BeehiveDto;
 import ru.crimea.beelife.dto.BeehiveWeightDto;
 import ru.crimea.beelife.exception.PermissionDeniedException;
@@ -33,14 +34,12 @@ public class BeehiveWeightServiceImpl extends BaseServiceImpl<BeehiveWeight, Bee
     @Autowired
     private BeehiveWeightMapper beehiveWeightMapper;
 
+    @DataAccess(value = "beehiveId", isParent = true)
     @Override
     public Page<BeehiveWeightDto> getAllByBeehiveId(Long beehiveId, Pageable pageable) throws PermissionDeniedException {
         int pageSize = pageable.getPageSize();
         int currentPage = pageable.getPageNumber();
         int startItem = currentPage * pageSize;
-
-        Beehive beehive = beehiveRepository.findBeehiveById(beehiveId);
-        checkUserPermission(beehive.getApiary().getUser());
 
         List<BeehiveWeight> beehiveWeights = beehiveWeightRepository.getAllByBeehiveId(beehiveId);
         List<BeehiveWeightDto> beehiveWeightDtos = beehiveWeightMapper.toDtoList(beehiveWeights);
@@ -56,8 +55,14 @@ public class BeehiveWeightServiceImpl extends BaseServiceImpl<BeehiveWeight, Bee
     }
 
     @Override
-    public User getUserFromObject(Long beehiveId) {
+    public User getUserFromObjectId(Long beehiveWeightId) {
         return null;
+    }
+
+    @Override
+    public User getUserFromParentObjectId(Long beehiveId) {
+        Beehive beehive = beehiveRepository.findBeehiveById(beehiveId);
+        return beehive.getApiary().getUser();
     }
 
     @Override

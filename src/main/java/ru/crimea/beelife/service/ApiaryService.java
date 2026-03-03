@@ -15,8 +15,6 @@ public interface ApiaryService extends BaseService<Apiary, ApiaryDto> {
 
     boolean saveApiary(ApiaryDto apiaryDto) throws PermissionDeniedException;
 
-    Page<BeehiveDto> getBeehivesByApiaryId(Long apiaryId, Pageable pageable, String beehiveName) throws PermissionDeniedException;
-
     void deleteById(Long beehiveId) throws PermissionDeniedException;
 }
 

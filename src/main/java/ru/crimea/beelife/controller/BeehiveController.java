@@ -50,7 +50,7 @@ public class BeehiveController {
         try {
             Long userId = ((User) authentication.getPrincipal()).getId();
             ApiaryDto apiary = apiaryService.findById(apiaryId);
-            Page<BeehiveDto> apiaryPage = apiaryService.getBeehivesByApiaryId(apiaryId, pageable, keyword);
+            Page<BeehiveDto> apiaryPage = beehiveService.getBeehivesByApiaryId(apiaryId, pageable, keyword);
 
             if (keyword != null) {
                 model.addAttribute("keyword", keyword);

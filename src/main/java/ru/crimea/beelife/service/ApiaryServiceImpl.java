@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import ru.crimea.beelife.aop.DataAccess;
 import ru.crimea.beelife.dto.ApiaryDto;
 import ru.crimea.beelife.dto.BeehiveDto;
 import ru.crimea.beelife.exception.PermissionDeniedException;
@@ -63,41 +64,24 @@ public class ApiaryServiceImpl extends BaseServiceImpl<Apiary, ApiaryDto> implem
     @Override
     public ApiaryDto findById(Long apiaryId) throws PermissionDeniedException {
         Apiary apiary = apiaryRepository.findApiaryById(apiaryId);
-        checkUserPermission(apiary.getUser());
         return apiaryMapper.toDto(apiary);
     }
 
     @Override
+    @DataAccess
     public void deleteById(Long apiaryId) throws PermissionDeniedException {
-        checkUserPermission(getUserFromObject(apiaryId));
         apiaryRepository.deleteById(apiaryId);
     }
 
     @Override
-    public Page<BeehiveDto> getBeehivesByApiaryId(Long apiaryId, Pageable pageable, String beehiveName) throws PermissionDeniedException {
-        int pageSize = pageable.getPageSize();
-        int currentPage = pageable.getPageNumber();
-        int startItem = currentPage * pageSize;
-        checkUserPermission(getUserFromObject(apiaryId));
-
-        List<Beehive> beehives = beehiveRepository.getBeehivesByApiaryId(apiaryId);
-        List<BeehiveDto> beehiveDtos = beehiveMapper.toDtoList(beehives);
-        List<BeehiveDto> list;
-        if (beehiveDtos.size() < startItem) {
-            list = Collections.emptyList();
-        } else {
-            int toIndex = Math.min(startItem + pageSize, beehiveDtos.size());
-            list = beehiveDtos.subList(startItem, toIndex);
-        }
-
-        return new PageImpl<>(list, PageRequest.of(currentPage, pageSize), beehiveDtos.size());
-
+    public User getUserFromObjectId(Long apiaryId) {
+        Apiary apiary = apiaryRepository.findApiaryById(apiaryId);
+        return apiary.getUser();
     }
 
     @Override
-    public User getUserFromObject(Long apiaryId) {
-        Apiary apiary = apiaryRepository.findApiaryById(apiaryId);
-        return apiary.getUser();
+    public User getUserFromParentObjectId(Long userId) {
+        return userRepository.getReferenceById(userId);
     }
 
 }
