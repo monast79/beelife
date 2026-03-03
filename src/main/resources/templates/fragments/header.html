@@ -6,6 +6,29 @@
                 BeeLife
             </a>
             <div class="collapse navbar-collapse" id="navbarScroll">
+
+<!--                <a th:href="@{'/user/home/apiary/delete/' + ${apiary.id}}"-->
+<!--                   th:text="#{menu.delete}" class="btn-delete text-black"-->
+<!--                   th:if="${apiary != null}"-->
+<!--                   th:message="#{modal.delete.confirmText.apiary(${apiary.name})}"-->
+<!--                   th:attr="data-target='#modal-warning'+${apiary.name}"></a>-->
+
+                <ul class="navbar-nav d-flex flex-row me-1">
+
+                    <li class="nav-item dropdown">
+                        <a data-mdb-dropdown-init class="nav-link dropdown-toggle text-black" href="#"
+                           id="apiaryDropdown"
+                           role="button"
+                           data-toggle="dropdown" aria-expanded="false" th:text="#{menu.apiary}"> Пасека </a>
+
+                        <ul class="dropdown-menu dropdown-menu-end" th:if="${apiaries != null && apiaries.size() > 0}">
+                            <li th:each="apiaryItem : ${apiaries}">
+                                <a th:href="'/user/home/apiary/' + ${apiaryItem.id}" class="dropdown-item text-black"
+                                   th:id="${apiaryItem.getName()}" th:text="${apiaryItem.getName()}">Overview</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
                 <input type="submit" id="addApiary" class="btn btn-toggle align-items-center rounded"
                        aria-expanded="true"
                        th:value="#{menu.add}"/>
@@ -16,29 +39,6 @@
                        th:if="${apiary != null}"
                        th:message="#{modal.delete.confirmText.apiary(${apiary.name})}"
                        th:href="@{'/user/home/apiary/delete/' + ${apiary.id}}"/>
-
-<!--                <a th:href="@{'/user/home/apiary/delete/' + ${apiary.id}}"-->
-<!--                   th:text="#{menu.delete}" class="btn-delete text-black"-->
-<!--                   th:if="${apiary != null}"-->
-<!--                   th:message="#{modal.delete.confirmText.apiary(${apiary.name})}"-->
-<!--                   th:attr="data-target='#modal-warning'+${apiary.name}"></a>-->
-
-                <ul class="navbar-nav d-flex flex-row me-1">
-
-                    <li class="nav-item dropdown" th:if="${apiaries != null && apiaries.size() > 0}">
-                        <a data-mdb-dropdown-init class="nav-link dropdown-toggle text-black" href="#"
-                           id="apiaryDropdown"
-                           role="button"
-                           data-toggle="dropdown" aria-expanded="false" th:text="#{menu.apiary}"> Пасека </a>
-
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li th:each="apiaryItem : ${apiaries}">
-                                <a th:href="'/user/home/apiary/' + ${apiaryItem.id}" class="dropdown-item text-black"
-                                   th:id="${apiaryItem.getName()}" th:text="${apiaryItem.getName()}">Overview</a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
             </div>
             <!-- Icons -->
             <ul class="navbar-nav d-flex flex-row me-1">
@@ -47,7 +47,7 @@
                     <a data-mdb-dropdown-init class="nav-link dropdown-toggle text-black" href="#" id="navbarDropdown"
                        role="button"
                        data-toggle="dropdown" aria-expanded="false">
-                        <i class="fi" th:classappend="${#strings.equals(param.lang, 'us')} ? fi-us : fi-ru"
+                        <i class="fi" th:classappend="${#strings.equals(param.lang, 'us')} ? 'fi-us' : 'fi-ru'"
                            id="lang"></i> </a>
                     <!-- Dropdown menu -->
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">

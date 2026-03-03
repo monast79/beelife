@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Data
 @Entity
 @Table(name = "users")

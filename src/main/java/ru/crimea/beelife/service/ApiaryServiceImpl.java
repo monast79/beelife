@@ -38,9 +38,9 @@ public class ApiaryServiceImpl extends BaseServiceImpl<Apiary, ApiaryDto> implem
     private BeehiveRepository beehiveRepository;
 
     @Override
+    @DataAccess(value = "userId", isParent = true)
     public List<ApiaryDto> getApiariesByUserId(Long userId) throws PermissionDeniedException {
         User user = userRepository.getReferenceById(userId);
-        checkUserPermission(user);
         List<Apiary> apiaries = apiaryRepository.getApiariesByUser(user);
 
         return apiaryMapper.toDtoList(apiaries);
@@ -48,7 +48,6 @@ public class ApiaryServiceImpl extends BaseServiceImpl<Apiary, ApiaryDto> implem
 
     public boolean saveApiary(ApiaryDto apiaryDto) throws PermissionDeniedException {
         User user = userRepository.getReferenceById(apiaryDto.getUserId());
-        checkUserPermission(user);
 
         Apiary apiaryDb = apiaryRepository.findApiaryByNameAndUserId(apiaryDto.getName(), apiaryDto.getUserId());
 
