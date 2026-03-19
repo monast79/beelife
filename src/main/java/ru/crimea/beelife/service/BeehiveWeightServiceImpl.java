@@ -7,10 +7,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.crimea.beelife.aop.DataAccess;
-import ru.crimea.beelife.dto.BeehiveDto;
 import ru.crimea.beelife.dto.BeehiveWeightDto;
 import ru.crimea.beelife.exception.PermissionDeniedException;
-import ru.crimea.beelife.mapper.BeehiveMapper;
 import ru.crimea.beelife.mapper.BeehiveWeightMapper;
 import ru.crimea.beelife.model.Beehive;
 import ru.crimea.beelife.model.BeehiveWeight;
@@ -19,8 +17,8 @@ import ru.crimea.beelife.repository.BeehiveRepository;
 import ru.crimea.beelife.repository.BeehiveWeightRepository;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class BeehiveWeightServiceImpl extends BaseServiceImpl<BeehiveWeight, BeehiveWeightDto> implements BeehiveWeightService {
@@ -36,12 +34,12 @@ public class BeehiveWeightServiceImpl extends BaseServiceImpl<BeehiveWeight, Bee
 
     @DataAccess(value = "beehiveId", isParent = true)
     @Override
-    public Page<BeehiveWeightDto> getAllByBeehiveId(Long beehiveId, Pageable pageable) throws PermissionDeniedException {
+    public Page<BeehiveWeightDto> getAllByBeehiveId(Long beehiveId, Date fromDate, Pageable pageable) throws PermissionDeniedException {
         int pageSize = pageable.getPageSize();
         int currentPage = pageable.getPageNumber();
         int startItem = currentPage * pageSize;
 
-        List<BeehiveWeight> beehiveWeights = beehiveWeightRepository.getAllByBeehiveId(beehiveId);
+        List<BeehiveWeight> beehiveWeights = beehiveWeightRepository.getBeehiveDetailsFromDate(beehiveId, new java.sql.Timestamp(fromDate.getTime()));
         List<BeehiveWeightDto> beehiveWeightDtos = beehiveWeightMapper.toDtoList(beehiveWeights);
         List<BeehiveWeightDto> list;
         if (beehiveWeightDtos.size() < startItem) {

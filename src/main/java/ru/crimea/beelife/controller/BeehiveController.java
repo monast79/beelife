@@ -20,6 +20,8 @@ import ru.crimea.beelife.service.ApiaryService;
 import ru.crimea.beelife.service.BeehiveService;
 import ru.crimea.beelife.service.BeehiveWeightService;
 
+import java.util.*;
+
 @Controller
 public class BeehiveController {
 
@@ -87,7 +89,7 @@ public class BeehiveController {
         }
         BeehiveDto beehiveDto = beehiveService.saveBeehive(beehiveForm);
         if (beehiveDto == null) {
-            redirectAttributes.addFlashAttribute("message", "Can not save to DB" );
+            redirectAttributes.addFlashAttribute("message", "Can not save to DB");
         }
         return "redirect:/user/home/apiary/" + beehiveForm.getApiaryId();
     }
@@ -107,16 +109,19 @@ public class BeehiveController {
     }
 
     @GetMapping("/user/home/beehive/details/{id}")
-    public String handleDeleteUser(@PathVariable("id") Long beehiveId,
-                                   Authentication authentication,
-                                   Model model,
-                                   @RequestParam(defaultValue = "1") int page,
-                                   @RequestParam(defaultValue = "5") int size,
-                                   @RequestParam(defaultValue = "id,asc") String[] sort) {
+    public String getBeehiveDetails(@PathVariable("id") Long beehiveId,
+                                    Authentication authentication,
+                                    Model model,
+                                    @RequestParam(defaultValue = "1") int page,
+                                    @RequestParam(defaultValue = "5") int size,
+                                    @RequestParam(defaultValue = "id,asc") String[] sort,
+                                    @RequestParam(defaultValue = "month") String graphFilter) {
         String sortField = sort[0];
         String sortDirection = sort[1];
         Sort.Direction direction = sortDirection.equals("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Sort.Order order = new Sort.Order(direction, sortField);
+
+        Date fromDate = getMinMeasureDate(graphFilter);
 
 
         try {
@@ -125,7 +130,7 @@ public class BeehiveController {
             Pageable pageable = PageRequest.of(page - 1, size, Sort.by(order));
 
             Long userId = ((User) authentication.getPrincipal()).getId();
-            Page<BeehiveWeightDto> beehivePage = beehiveWeightService.getAllByBeehiveId(beehiveId, pageable);
+            Page<BeehiveWeightDto> beehivePage = beehiveWeightService.getAllByBeehiveId(beehiveId, fromDate, pageable);
             model.addAttribute("beehivePage", beehivePage);
             model.addAttribute("beehiveWeights", beehivePage.getContent());
             model.addAttribute("currentPage", beehivePage.getNumber() + 1);
@@ -138,9 +143,37 @@ public class BeehiveController {
             model.addAttribute("apiaries", apiaryService.getApiariesByUserId(userId));
             model.addAttribute("userId", userId);
             model.addAttribute("beehive", beehive);
+            setBeehiveChat(model, beehivePage.getContent());
         } catch (Exception e) {
             model.addAttribute("message", e.getMessage());
         }
         return "userHome";
+    }
+
+    private void setBeehiveChat(Model model, List<BeehiveWeightDto> beehiveWeights) {
+        Map<Date, Double> graphData = new TreeMap<>();
+        beehiveWeights.forEach(beehiveWeight -> {
+                graphData.put(beehiveWeight.getMeasure(), beehiveWeight.getWeight());
+        });
+        model.addAttribute("chartData", graphData);
+        ;
+    }
+
+    private static Date getMinMeasureDate( String graphFilter) {
+        Date currentDate = new Date();
+        Date startDate = null;
+        Calendar c = Calendar.getInstance();
+        c.setTime(currentDate);
+        if (graphFilter.equals("week")) {
+            c.add(Calendar.DAY_OF_WEEK, -1);
+            startDate = c.getTime();
+        } else if (graphFilter.equals("month")) {
+            c.add(Calendar.MONTH, - 1);
+            startDate = c.getTime();
+        } else{
+            c.set(Calendar.DAY_OF_YEAR, 1);
+            startDate = c.getTime();
+        }
+        return startDate;
     }
 }

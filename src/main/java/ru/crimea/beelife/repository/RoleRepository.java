@@ -5,6 +5,6 @@ import ru.crimea.beelife.model.Role;
 
 public interface RoleRepository extends JpaRepository<Role, Long> {
 
-        Role getRoleByName(String name);
+    Role getRoleByName(String name);
 
 }

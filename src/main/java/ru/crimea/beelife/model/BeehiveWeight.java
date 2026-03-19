@@ -12,6 +12,7 @@ import java.sql.Timestamp;
 @Data
 @Entity
 @Table(name = "hive_weights")
+@NamedQuery(name = "BeehiveWeight.getBeehiveDetailsFromDate", query = "FROM BeehiveWeight bw WHERE bw.beehive.id  = :beehiveId and bw.measure > :fromDate")
 public class BeehiveWeight extends BasePersistableObject{
 
     @Id

@@ -1,63 +1,73 @@
-<div th:fragment="beehiveWeights" th:if="${beehive != null}" id="beehiveeights">
+<div  th:fragment="beehiveWeights" th:if="${beehive != null}" id="beehiveeights">
     <h1 class="text-center" th:text="${beehive.name}">Улей</h1>
-    <form th:action="'/user/home/beehive/details/' + ${beehive.id}" id="searchForm">
-        <div class="row d-flex">
-            <div class="col input-group mt-2">
-                <div class="search">
-                    <label class="input-group-text" for="pageSize" th:text="#{label.table.page.size}">Items
-                        per
-                        page:</label>
+    <div class="row d-flex" >
+        <div class="col-6" >
+            <h2 th:text="#{header.beehive.weights}">Chart of weights</h2>
+            <div id="chart_div"></div>
+        </div>
+        <div class="col-4"  >
+            <form th:action="'/user/home/beehive/details/' + ${beehive.id}" id="searchForm">
+                <div class="row d-flex">
+                    <div class="col input-group mt-2">
+                        <div class="search">
+                            <label class="input-group-text" for="pageSize" th:text="#{label.table.page.size}">Items
+                                per
+                                page:</label>
+                        </div>
+                        <select form="searchForm" name="size" th:value="${pageSize}" onchange="changePageSize()"
+                                class="size-select bg-warning" id="pageSize">
+                            <option th:each="s : ${ {3, 5, 10} }" th:value="${s}" th:text="${s}"
+                                    th:selected="${s == pageSize}"></option>
+                        </select>
+                    </div>
                 </div>
-                <select form="searchForm" name="size" th:value="${pageSize}" onchange="changePageSize()"
-                        class="size-select bg-warning" id="pageSize">
-                    <option th:each="s : ${ {3, 5, 10} }" th:value="${s}" th:text="${s}"
-                            th:selected="${s == pageSize}"></option>
-                </select>
-            </div>
-        </div>
-    </form>
-    <table class="table table-bordered table-hover table-responsive-xl">
-        <thead class="thead-light">
-        <tr>
-            <th scope="col" th:text="#{label.table.beehive.weight.measure}">Measure</th>
-            <th scope="col" th:text="#{label.table.beehive.weight.weight}">Weight</th>
+            </form>
+            <table class="table table-bordered table-hover table-responsive-xl">
+                <thead class="thead-light">
+                <tr>
+                    <th scope="col" th:text="#{label.table.beehive.weight.measure}">Measure</th>
+                    <th scope="col" th:text="#{label.table.beehive.weight.weight}">Weight</th>
 
-        </tr>
-        </thead>
-        <div class="flex-shrink-0" th:if="${beehiveWeights != null && beehiveWeights.size() > 0}">
-            <tbody class="table-group-divider">
-            <tr th:each="weight : ${beehiveWeights}">
-                <td>[[${weight.measure}]]</td>
-                <td>[[${weight.weight}]]</td>
-            </tr>
-            </tbody>
+                </tr>
+                </thead>
+                <div class="flex-shrink-0" th:if="${beehiveWeights != null && beehiveWeights.size() > 0}">
+                    <tbody class="table-group-divider">
+                    <tr th:each="weight : ${beehiveWeights}">
+                        <td>[[${weight.measure}]]</td>
+                        <td>[[${weight.weight}]]</td>
+                    </tr>
+                    </tbody>
+                </div>
+            </table>
+            <nav aria-label="Pagination" th:if="${totalPages > 0}">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                        <a th:replace="fragments/pagingBeehiveWeights :: paging(1, '<<', #{pagination.first.page})"></a>
+                    </li>
+                    <li class="page-item font-weight-bold" th:classappend="${currentPage == 1} ? 'disabled'">
+                        <a th:replace="fragments/pagingBeehiveWeights :: paging(${currentPage - 1}, #{pagination.prev}, #{pagination.previous.page})"></a>
+                    </li>
+                    <li class="page-item disabled" th:if="${currentPage - 2 > 1}">
+                        <a class="page-link" href="#">...</a>
+                    </li>
+                    <li class="page-item" th:classappend="${page == currentPage} ? 'active'"
+                        th:each="page : ${#numbers.sequence(currentPage > 2 ? currentPage - 2 : 1, currentPage + 2 < totalPages ? currentPage + 2 : totalPages)}">
+                        <a th:replace="fragments/pagingBeehiveWeights :: paging(${page}, ${page}, #{pagination.page(${page})})"></a>
+                    </li>
+                    <li class="page-item disabled" th:if="${currentPage + 2 < totalPages}">
+                        <a class="page-link" href="#">...</a>
+                    </li>
+                    <li class="page-item font-weight-bold"
+                        th:classappend="${currentPage == totalPages} ? 'disabled'">
+                        <a th:replace="fragments/pagingBeehiveWeights :: paging(${currentPage + 1},#{pagination.next}, #{pagination.next.page})"></a>
+                    </li>
+                    <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                        <a th:replace="fragments/pagingBeehiveWeights :: paging(${totalPages}, '>>', #{pagination.last.page})"></a>
+                    </li>
+                </ul>
+            </nav>
         </div>
-    </table>
-    <nav aria-label="Pagination" th:if="${totalPages > 0}">
-        <ul class="pagination justify-content-center">
-            <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
-                <a th:replace="fragments/pagingBeehiveWeights :: paging(1, '<<', #{pagination.first.page})"></a>
-            </li>
-            <li class="page-item font-weight-bold" th:classappend="${currentPage == 1} ? 'disabled'">
-                <a th:replace="fragments/pagingBeehiveWeights :: paging(${currentPage - 1}, #{pagination.prev}, #{pagination.previous.page})"></a>
-            </li>
-            <li class="page-item disabled" th:if="${currentPage - 2 > 1}">
-                <a class="page-link" href="#">...</a>
-            </li>
-            <li class="page-item" th:classappend="${page == currentPage} ? 'active'"
-                th:each="page : ${#numbers.sequence(currentPage > 2 ? currentPage - 2 : 1, currentPage + 2 < totalPages ? currentPage + 2 : totalPages)}">
-                <a th:replace="fragments/pagingBeehiveWeights :: paging(${page}, ${page}, #{pagination.page(${page})})"></a>
-            </li>
-            <li class="page-item disabled" th:if="${currentPage + 2 < totalPages}">
-                <a class="page-link" href="#">...</a>
-            </li>
-            <li class="page-item font-weight-bold"
-                th:classappend="${currentPage == totalPages} ? 'disabled'">
-                <a th:replace="fragments/pagingBeehiveWeights :: paging(${currentPage + 1},#{pagination.next}, #{pagination.next.page})"></a>
-            </li>
-            <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
-                <a th:replace="fragments/pagingBeehiveWeights :: paging(${totalPages}, '>>', #{pagination.last.page})"></a>
-            </li>
-        </ul>
-    </nav>
+    </div>
+
+
 </div>
