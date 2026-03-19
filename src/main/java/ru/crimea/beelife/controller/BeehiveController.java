@@ -14,6 +14,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.crimea.beelife.dto.ApiaryDto;
 import ru.crimea.beelife.dto.BeehiveDto;
 import ru.crimea.beelife.dto.BeehiveWeightDto;
+import ru.crimea.beelife.dto.ChartPeriod;
 import ru.crimea.beelife.exception.PermissionDeniedException;
 import ru.crimea.beelife.model.User;
 import ru.crimea.beelife.service.ApiaryService;
@@ -115,13 +116,13 @@ public class BeehiveController {
                                     @RequestParam(defaultValue = "1") int page,
                                     @RequestParam(defaultValue = "5") int size,
                                     @RequestParam(defaultValue = "id,asc") String[] sort,
-                                    @RequestParam(defaultValue = "month") String graphFilter) {
+                                    @RequestParam( defaultValue = "month") String period) {
         String sortField = sort[0];
         String sortDirection = sort[1];
         Sort.Direction direction = sortDirection.equals("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Sort.Order order = new Sort.Order(direction, sortField);
-
-        Date fromDate = getMinMeasureDate(graphFilter);
+        ChartPeriod chart = ChartPeriod.valueOf(period.toUpperCase());
+        Date fromDate = getMinMeasureDate(chart);
 
 
         try {
@@ -143,6 +144,7 @@ public class BeehiveController {
             model.addAttribute("apiaries", apiaryService.getApiariesByUserId(userId));
             model.addAttribute("userId", userId);
             model.addAttribute("beehive", beehive);
+            model.addAttribute("chart", chart);
             setBeehiveChat(model, beehivePage.getContent());
         } catch (Exception e) {
             model.addAttribute("message", e.getMessage());
@@ -153,24 +155,24 @@ public class BeehiveController {
     private void setBeehiveChat(Model model, List<BeehiveWeightDto> beehiveWeights) {
         Map<Date, Double> graphData = new TreeMap<>();
         beehiveWeights.forEach(beehiveWeight -> {
-                graphData.put(beehiveWeight.getMeasure(), beehiveWeight.getWeight());
+            graphData.put(beehiveWeight.getMeasure(), beehiveWeight.getWeight());
         });
         model.addAttribute("chartData", graphData);
         ;
     }
 
-    private static Date getMinMeasureDate( String graphFilter) {
+    private static Date getMinMeasureDate(ChartPeriod graphFilter) {
         Date currentDate = new Date();
         Date startDate = null;
         Calendar c = Calendar.getInstance();
         c.setTime(currentDate);
-        if (graphFilter.equals("week")) {
+        if (graphFilter.WEEK.equals(graphFilter)) {
             c.add(Calendar.DAY_OF_WEEK, -1);
             startDate = c.getTime();
-        } else if (graphFilter.equals("month")) {
-            c.add(Calendar.MONTH, - 1);
+        } else if (graphFilter.MONTH.equals(graphFilter)) {
+            c.add(Calendar.MONTH, -1);
             startDate = c.getTime();
-        } else{
+        } else {
             c.set(Calendar.DAY_OF_YEAR, 1);
             startDate = c.getTime();
         }
