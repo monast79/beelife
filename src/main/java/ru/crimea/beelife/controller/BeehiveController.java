@@ -1,10 +1,7 @@
 package ru.crimea.beelife.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -131,7 +128,18 @@ public class BeehiveController {
             Pageable pageable = PageRequest.of(page - 1, size, Sort.by(order));
 
             Long userId = ((User) authentication.getPrincipal()).getId();
-            Page<BeehiveWeightDto> beehivePage = beehiveWeightService.getAllByBeehiveId(beehiveId, fromDate, pageable);
+            List<BeehiveWeightDto> beehiveWeightDtos = beehiveWeightService.getAllByBeehiveId(beehiveId, fromDate);
+            int pageSize = pageable.getPageSize();
+            int currentPage = pageable.getPageNumber();
+            int startItem = currentPage * pageSize;
+            List<BeehiveWeightDto> list;
+            if (beehiveWeightDtos.size() < startItem) {
+                list = Collections.emptyList();
+            } else {
+                int toIndex = Math.min(startItem + pageSize, beehiveWeightDtos.size());
+                list = beehiveWeightDtos.subList(startItem, toIndex);
+            }
+            Page<BeehiveWeightDto> beehivePage  = new PageImpl<>(list, PageRequest.of(currentPage, pageSize), beehiveWeightDtos.size());new PageImpl<>(list, PageRequest.of(currentPage, pageSize), beehiveWeightDtos.size());
             model.addAttribute("beehivePage", beehivePage);
             model.addAttribute("beehiveWeights", beehivePage.getContent());
             model.addAttribute("currentPage", beehivePage.getNumber() + 1);
@@ -145,7 +153,7 @@ public class BeehiveController {
             model.addAttribute("userId", userId);
             model.addAttribute("beehive", beehive);
             model.addAttribute("chart", chart);
-            setBeehiveChat(model, beehivePage.getContent());
+            setBeehiveChat(model, beehiveWeightDtos);
         } catch (Exception e) {
             model.addAttribute("message", e.getMessage());
         }

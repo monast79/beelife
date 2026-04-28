@@ -1,10 +1,12 @@
 package ru.crimea.beelife.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.crimea.beelife.aop.DataAccess;
 import ru.crimea.beelife.dto.BeehiveWeightDto;
@@ -16,10 +18,14 @@ import ru.crimea.beelife.model.User;
 import ru.crimea.beelife.repository.BeehiveRepository;
 import ru.crimea.beelife.repository.BeehiveWeightRepository;
 
+import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+@Slf4j
 @Service
 public class BeehiveWeightServiceImpl extends BaseServiceImpl<BeehiveWeight, BeehiveWeightDto> implements BeehiveWeightService {
 
@@ -34,22 +40,12 @@ public class BeehiveWeightServiceImpl extends BaseServiceImpl<BeehiveWeight, Bee
 
     @DataAccess(value = "beehiveId", isParent = true)
     @Override
-    public Page<BeehiveWeightDto> getAllByBeehiveId(Long beehiveId, Date fromDate, Pageable pageable) throws PermissionDeniedException {
-        int pageSize = pageable.getPageSize();
-        int currentPage = pageable.getPageNumber();
-        int startItem = currentPage * pageSize;
+    public List<BeehiveWeightDto> getAllByBeehiveId(Long beehiveId, Date fromDate) throws PermissionDeniedException {
 
         List<BeehiveWeight> beehiveWeights = beehiveWeightRepository.getBeehiveDetailsFromDate(beehiveId, new java.sql.Timestamp(fromDate.getTime()));
         List<BeehiveWeightDto> beehiveWeightDtos = beehiveWeightMapper.toDtoList(beehiveWeights);
-        List<BeehiveWeightDto> list;
-        if (beehiveWeightDtos.size() < startItem) {
-            list = Collections.emptyList();
-        } else {
-            int toIndex = Math.min(startItem + pageSize, beehiveWeightDtos.size());
-            list = beehiveWeightDtos.subList(startItem, toIndex);
-        }
 
-        return new PageImpl<>(list, PageRequest.of(currentPage, pageSize), beehiveWeightDtos.size());
+        return beehiveWeightDtos;
     }
 
     @Override

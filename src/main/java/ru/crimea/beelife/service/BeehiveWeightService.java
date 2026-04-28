@@ -7,8 +7,9 @@ import ru.crimea.beelife.exception.PermissionDeniedException;
 import ru.crimea.beelife.model.BeehiveWeight;
 
 import java.util.Date;
+import java.util.List;
 
 public interface BeehiveWeightService extends BaseService<BeehiveWeight, BeehiveWeightDto> {
 
-    Page<BeehiveWeightDto> getAllByBeehiveId(Long beehiveId, Date fromDate, Pageable pageable) throws PermissionDeniedException;
+    List<BeehiveWeightDto> getAllByBeehiveId(Long beehiveId, Date fromDate) throws PermissionDeniedException;
 }
