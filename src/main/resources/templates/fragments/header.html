@@ -5,7 +5,7 @@
             <a class="navbar-brand text-black" th:href="${isAdmin} ? @{/admin/home} : @{/user/home}">
                 BeeLife
             </a>
-            <div class="collapse navbar-collapse" id="navbarScroll">
+            <div class="collapse navbar-collapse" id="navbarScroll" th:unless="${isAdmin}">
 
 <!--                <a th:href="@{'/user/home/apiary/delete/' + ${apiary.id}}"-->
 <!--                   th:text="#{menu.delete}" class="btn-delete text-black"-->

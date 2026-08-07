@@ -49,7 +49,7 @@ public class BeehiveController {
 
         try {
             Long userId = ((User) authentication.getPrincipal()).getId();
-            ApiaryDto apiary = apiaryService.findById(apiaryId);
+            ApiaryDto apiary = apiaryService.findDtoById(apiaryId);
             Page<BeehiveDto> apiaryPage = beehiveService.getBeehivesByApiaryId(apiaryId, pageable, keyword);
 
             if (keyword != null) {
@@ -77,7 +77,7 @@ public class BeehiveController {
     @GetMapping("/user/home/beehive/{id}")
     @ResponseBody
     public BeehiveDto getBeehive(@PathVariable("id") Long beehiveId) throws PermissionDeniedException {
-        return beehiveService.findById(beehiveId);
+        return beehiveService.findDtoById(beehiveId);
     }
 
     @PostMapping("/user/home/beehive/save")
@@ -96,7 +96,7 @@ public class BeehiveController {
     public String handleDeleteBeehive(@PathVariable("id") Long beehiveId, RedirectAttributes redirectAttributes) {
         Long apiaryId = null;
         try {
-            apiaryId = beehiveService.findById(beehiveId).getApiaryId();
+            apiaryId = beehiveService.findDtoById(beehiveId).getApiaryId();
             beehiveService.deleteById(beehiveId);
             redirectAttributes.addFlashAttribute("message", "The Beehive with id=" + beehiveId + " has been deleted successfully!");
         } catch (Exception e) {
@@ -123,7 +123,7 @@ public class BeehiveController {
 
 
         try {
-            BeehiveDto beehive = beehiveService.findById(beehiveId);
+            BeehiveDto beehive = beehiveService.findDtoById(beehiveId);
 
             Pageable pageable = PageRequest.of(page - 1, size, Sort.by(order));
 
@@ -162,22 +162,22 @@ public class BeehiveController {
 
     private void setBeehiveChat(Model model, List<BeehiveWeightDto> beehiveWeights) {
         Map<Date, Double> graphData = new TreeMap<>();
-        beehiveWeights.forEach(beehiveWeight -> {
-            graphData.put(beehiveWeight.getMeasure(), beehiveWeight.getWeight());
-        });
+        beehiveWeights.forEach(beehiveWeight ->
+            graphData.put(beehiveWeight.getMeasure(), beehiveWeight.getWeight())
+        );
         model.addAttribute("chartData", graphData);
-        ;
+
     }
 
     private static Date getMinMeasureDate(ChartPeriod graphFilter) {
         Date currentDate = new Date();
-        Date startDate = null;
+        Date startDate;
         Calendar c = Calendar.getInstance();
         c.setTime(currentDate);
-        if (graphFilter.WEEK.equals(graphFilter)) {
+        if (ChartPeriod.WEEK.equals(graphFilter)) {
             c.add(Calendar.DAY_OF_WEEK, -1);
             startDate = c.getTime();
-        } else if (graphFilter.MONTH.equals(graphFilter)) {
+        } else if (ChartPeriod.MONTH.equals(graphFilter)) {
             c.add(Calendar.MONTH, -1);
             startDate = c.getTime();
         } else {

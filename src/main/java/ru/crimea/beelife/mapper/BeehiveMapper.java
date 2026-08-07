@@ -1,24 +1,21 @@
 package ru.crimea.beelife.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingConstants;
+import org.mapstruct.*;
 import ru.crimea.beelife.dto.BeehiveDto;
 import ru.crimea.beelife.model.Beehive;
+import ru.crimea.beelife.service.ApiaryService;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = ApiaryService.class)
 public interface BeehiveMapper extends BaseMapper<BeehiveDto, Beehive> {
 
-    @Override
-    @Mapping(target = "type", source = "hiveType")
-    @Mapping(target = "apiaryId", source = "model.apiary.id")
-    public BeehiveDto toDto(Beehive model) ;
+  @Override
+  @Mapping(target = "type", source = "hiveType")
+  @Mapping(target = "apiaryId", source = "model.apiary.id")
+  BeehiveDto toDto(Beehive model);
 
 
-    //ToDo
-    //AfterMapping for apiary - should go to db via repository to find Entity
-    @Override
-    @Mapping(target="apiary",ignore = true)
-    @Mapping(target = "hiveType", source = "type")
-    public Beehive toModel(BeehiveDto dto) ;
+  @Override
+  @Mapping(target = "apiary", source = "apiaryId")
+  @Mapping(target = "hiveType", source = "type")
+  Beehive toModel(BeehiveDto dto);
 }

@@ -4,19 +4,38 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+import org.thymeleaf.spring6.view.ThymeleafViewResolver;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import ru.crimea.beelife.helper.UserHelper;
 
 @Configuration
 public class MvcConfig implements WebMvcConfigurer {
 
+    @Bean
+    public ViewResolver viewResolver() {
+        ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+        templateResolver.setTemplateMode("XHTML");
+        templateResolver.setSuffix(".html");
+
+        SpringTemplateEngine engine = new SpringTemplateEngine();
+        engine.setTemplateResolver(templateResolver);
+
+        ThymeleafViewResolver viewResolver = new ThymeleafViewResolver();
+        viewResolver.setTemplateEngine(engine);
+        return viewResolver;
+    }
+
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/login").setViewName("login");
+        registry.addViewController("/confirm-registration").setViewName("confirm-registration");
         registry.addViewController("/admin/home").setViewName("adminHome");
         registry.addViewController("/user/home").setViewName("userHome");
     }

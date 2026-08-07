@@ -1,25 +1,15 @@
 package ru.crimea.beelife.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.crimea.beelife.aop.DataAccess;
 import ru.crimea.beelife.dto.ApiaryDto;
-import ru.crimea.beelife.dto.BeehiveDto;
-import ru.crimea.beelife.exception.PermissionDeniedException;
 import ru.crimea.beelife.mapper.ApiaryMapper;
-import ru.crimea.beelife.mapper.BeehiveMapper;
 import ru.crimea.beelife.model.Apiary;
-import ru.crimea.beelife.model.Beehive;
 import ru.crimea.beelife.model.User;
 import ru.crimea.beelife.repository.ApiaryRepository;
-import ru.crimea.beelife.repository.BeehiveRepository;
 import ru.crimea.beelife.repository.UserRepository;
 
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -31,22 +21,17 @@ public class ApiaryServiceImpl extends BaseServiceImpl<Apiary, ApiaryDto> implem
     private UserRepository userRepository;
     @Autowired
     private ApiaryMapper apiaryMapper;
-    @Autowired
-    private BeehiveMapper beehiveMapper;
-
-    @Autowired
-    private BeehiveRepository beehiveRepository;
 
     @Override
     @DataAccess(value = "userId", isParent = true)
-    public List<ApiaryDto> getApiariesByUserId(Long userId) throws PermissionDeniedException {
+    public List<ApiaryDto> getApiariesByUserId(Long userId) {
         User user = userRepository.getReferenceById(userId);
         List<Apiary> apiaries = apiaryRepository.getApiariesByUser(user);
 
         return apiaryMapper.toDtoList(apiaries);
     }
 
-    public boolean saveApiary(ApiaryDto apiaryDto) throws PermissionDeniedException {
+    public boolean saveApiary(ApiaryDto apiaryDto) {
         User user = userRepository.getReferenceById(apiaryDto.getUserId());
 
         Apiary apiaryDb = apiaryRepository.findApiaryByNameAndUserId(apiaryDto.getName(), apiaryDto.getUserId());
@@ -61,14 +46,19 @@ public class ApiaryServiceImpl extends BaseServiceImpl<Apiary, ApiaryDto> implem
     }
 
     @Override
-    public ApiaryDto findById(Long apiaryId) throws PermissionDeniedException {
+    public ApiaryDto findDtoById(Long apiaryId) {
         Apiary apiary = apiaryRepository.findApiaryById(apiaryId);
         return apiaryMapper.toDto(apiary);
     }
 
     @Override
+    public Apiary findById(Long apiaryId) {
+        return  apiaryRepository.findApiaryById(apiaryId);
+    }
+
+    @Override
     @DataAccess
-    public void deleteById(Long apiaryId) throws PermissionDeniedException {
+    public void deleteById(Long apiaryId) {
         apiaryRepository.deleteById(apiaryId);
     }
 

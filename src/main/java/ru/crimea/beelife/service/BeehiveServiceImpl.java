@@ -9,7 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.crimea.beelife.aop.DataAccess;
 import ru.crimea.beelife.dto.BeehiveDto;
-import ru.crimea.beelife.exception.PermissionDeniedException;
 import ru.crimea.beelife.mapper.BeehiveMapper;
 import ru.crimea.beelife.model.Apiary;
 import ru.crimea.beelife.model.Beehive;
@@ -33,7 +32,7 @@ public class BeehiveServiceImpl extends BaseServiceImpl<Beehive, BeehiveDto> imp
 
     @Override
     @DataAccess(value = "apiaryId", isParent = true)
-    public Page<BeehiveDto> getBeehivesByApiaryId(Long apiaryId, Pageable pageable, String beehiveName) throws PermissionDeniedException {
+    public Page<BeehiveDto> getBeehivesByApiaryId(Long apiaryId, Pageable pageable, String beehiveName) {
         int pageSize = pageable.getPageSize();
         int currentPage = pageable.getPageNumber();
         int startItem = currentPage * pageSize;
@@ -60,9 +59,7 @@ public class BeehiveServiceImpl extends BaseServiceImpl<Beehive, BeehiveDto> imp
             beehive.setName(beehiveDto.getName());
             beehive.setHiveType(HiveType.valueOf(beehiveDto.getType()));
         } else {
-            Apiary apiary = apiaryRepository.findApiaryById(beehiveDto.getApiaryId());
             beehive = beehiveMapper.toModel(beehiveDto);
-            beehive.setApiary(apiary);
         }
 
         beehiveRepository.save(beehive);
@@ -71,12 +68,12 @@ public class BeehiveServiceImpl extends BaseServiceImpl<Beehive, BeehiveDto> imp
 
     @Override
     @DataAccess
-    public void deleteById(Long beehiveId) throws PermissionDeniedException {
+    public void deleteById(Long beehiveId) {
         beehiveRepository.deleteById(beehiveId);
     }
 
     @Override
-    public BeehiveDto findById(Long beehiveId) throws PermissionDeniedException {
+    public BeehiveDto findDtoById(Long beehiveId) {
         Beehive beehive = beehiveRepository.findBeehiveById(beehiveId);
         return beehiveMapper.toDto(beehive);
     }
@@ -91,5 +88,10 @@ public class BeehiveServiceImpl extends BaseServiceImpl<Beehive, BeehiveDto> imp
     public User getUserFromParentObjectId(Long apiaryId) {
         Apiary apiary = apiaryRepository.findApiaryById(apiaryId);
         return apiary.getUser();
+    }
+
+    @Override
+    public Beehive findById(Long id) {
+        return beehiveRepository.findBeehiveById(id);
     }
 }

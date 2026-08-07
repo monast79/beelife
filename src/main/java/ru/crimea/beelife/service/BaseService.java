@@ -13,7 +13,9 @@ public interface BaseService<T extends BasePersistableObject, D extends BaseDto>
 
     User getUserFromParentObjectId(Long id);
 
-    D findById(Long id) throws PermissionDeniedException;
+    T findById(Long id);
+
+    D findDtoById(Long id) throws PermissionDeniedException;
 
     void deleteById(Long id) throws PermissionDeniedException;
 }

@@ -1,7 +1,6 @@
 package ru.crimea.beelife.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -9,7 +8,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -18,12 +16,12 @@ import ru.crimea.beelife.service.UserService;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/admin/home")
 public class AdminController {
 
-    @Autowired
     private final UserService userService;
 
-    @RequestMapping(value = "/admin/home", method = RequestMethod.GET)
+    @GetMapping
     public String listUsers(
             Model model,
             @RequestParam(required = false) String keyword,
@@ -57,7 +55,7 @@ public class AdminController {
         return "adminHome";
     }
 
-    @GetMapping("/admin/home/delete/{id}")
+    @GetMapping("/delete/{id}")
     public String handleDeleteUser(@PathVariable("id") Long userId, RedirectAttributes redirectAttributes) {
         try {
             userService.deleteById(userId);
@@ -69,18 +67,19 @@ public class AdminController {
         return "redirect:/admin/home";
     }
 
-    @GetMapping("/admin/home/user/{id}")
+    @GetMapping("/user/{id}")
     @ResponseBody
     public UserDto getUser(@PathVariable("id") Long userId) {
         return userService.findById(userId);
     }
 
 
-    @PostMapping("/admin/home/updateUser")
-    public String updateUser(@ModelAttribute("userForm") @Validated UserDto userForm, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+    @PostMapping("/updateUser")
+    public String updateUser(@ModelAttribute("userForm") @Validated UserDto userForm, RedirectAttributes redirectAttributes) {
         try {
             userService.updateUser(userForm);
-            redirectAttributes.addFlashAttribute("message", "The User " + userForm.getUsername() + " has been updated successfully!");
+            redirectAttributes.addFlashAttribute("message",
+                "The User " + userForm.getUsername() + " has been updated successfully!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("message", e.getMessage());
         }

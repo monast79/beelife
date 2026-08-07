@@ -2,15 +2,9 @@ package ru.crimea.beelife.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.crimea.beelife.aop.DataAccess;
 import ru.crimea.beelife.dto.BeehiveWeightDto;
-import ru.crimea.beelife.exception.PermissionDeniedException;
 import ru.crimea.beelife.mapper.BeehiveWeightMapper;
 import ru.crimea.beelife.model.Beehive;
 import ru.crimea.beelife.model.BeehiveWeight;
@@ -18,10 +12,6 @@ import ru.crimea.beelife.model.User;
 import ru.crimea.beelife.repository.BeehiveRepository;
 import ru.crimea.beelife.repository.BeehiveWeightRepository;
 
-import java.text.ParseException;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -40,12 +30,11 @@ public class BeehiveWeightServiceImpl extends BaseServiceImpl<BeehiveWeight, Bee
 
     @DataAccess(value = "beehiveId", isParent = true)
     @Override
-    public List<BeehiveWeightDto> getAllByBeehiveId(Long beehiveId, Date fromDate) throws PermissionDeniedException {
+    public List<BeehiveWeightDto> getAllByBeehiveId(Long beehiveId, Date fromDate) {
 
         List<BeehiveWeight> beehiveWeights = beehiveWeightRepository.getBeehiveDetailsFromDate(beehiveId, new java.sql.Timestamp(fromDate.getTime()));
-        List<BeehiveWeightDto> beehiveWeightDtos = beehiveWeightMapper.toDtoList(beehiveWeights);
 
-        return beehiveWeightDtos;
+        return beehiveWeightMapper.toDtoList(beehiveWeights);
     }
 
     @Override
@@ -60,7 +49,12 @@ public class BeehiveWeightServiceImpl extends BaseServiceImpl<BeehiveWeight, Bee
     }
 
     @Override
-    public BeehiveWeightDto findById(Long id) {
+    public BeehiveWeight findById(Long id) {
+        return null;
+    }
+
+    @Override
+    public BeehiveWeightDto findDtoById(Long id) {
         return null;
     }
 
