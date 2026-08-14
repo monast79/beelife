@@ -5,14 +5,12 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
-import ru.crimea.beelife.exception.PermissionDeniedException;
 import ru.crimea.beelife.model.User;
 import ru.crimea.beelife.service.BaseService;
 import org.aspectj.lang.reflect.MethodSignature;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.Arrays;
 
 @Aspect
 @Component

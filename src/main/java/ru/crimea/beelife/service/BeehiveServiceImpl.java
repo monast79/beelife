@@ -2,6 +2,8 @@ package ru.crimea.beelife.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -9,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.crimea.beelife.aop.DataAccess;
 import ru.crimea.beelife.dto.BeehiveDto;
+import ru.crimea.beelife.exception.PermissionDeniedException;
 import ru.crimea.beelife.mapper.BeehiveMapper;
 import ru.crimea.beelife.model.Apiary;
 import ru.crimea.beelife.model.Beehive;
@@ -32,7 +35,8 @@ public class BeehiveServiceImpl extends BaseServiceImpl<Beehive, BeehiveDto> imp
 
     @Override
     @DataAccess(value = "apiaryId", isParent = true)
-    public Page<BeehiveDto> getBeehivesByApiaryId(Long apiaryId, Pageable pageable, String beehiveName) {
+    @Cacheable("apiary_beehives")
+    public Page<BeehiveDto> getBeehivesByApiaryId(Long apiaryId, Pageable pageable, String beehiveName)  throws PermissionDeniedException {
         int pageSize = pageable.getPageSize();
         int currentPage = pageable.getPageNumber();
         int startItem = currentPage * pageSize;
@@ -52,6 +56,7 @@ public class BeehiveServiceImpl extends BaseServiceImpl<Beehive, BeehiveDto> imp
     }
 
     @Override
+    @CacheEvict(value = "apiary_beehives", allEntries = true)
     public BeehiveDto saveBeehive(BeehiveDto beehiveDto) {
         Beehive beehive = beehiveRepository.findBeehiveByNameAndApiaryId(beehiveDto.getName(), beehiveDto.getApiaryId());
         if (beehive != null) {
@@ -68,6 +73,7 @@ public class BeehiveServiceImpl extends BaseServiceImpl<Beehive, BeehiveDto> imp
 
     @Override
     @DataAccess
+    @CacheEvict(value = "apiary_beehives", allEntries = true)
     public void deleteById(Long beehiveId) {
         beehiveRepository.deleteById(beehiveId);
     }

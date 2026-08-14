@@ -1,9 +1,12 @@
 package ru.crimea.beelife.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import ru.crimea.beelife.aop.DataAccess;
 import ru.crimea.beelife.dto.ApiaryDto;
+import ru.crimea.beelife.exception.PermissionDeniedException;
 import ru.crimea.beelife.mapper.ApiaryMapper;
 import ru.crimea.beelife.model.Apiary;
 import ru.crimea.beelife.model.User;
@@ -24,13 +27,15 @@ public class ApiaryServiceImpl extends BaseServiceImpl<Apiary, ApiaryDto> implem
 
     @Override
     @DataAccess(value = "userId", isParent = true)
-    public List<ApiaryDto> getApiariesByUserId(Long userId) {
+    @Cacheable("user_apiaries")
+    public List<ApiaryDto> getApiariesByUserId(Long userId)  throws PermissionDeniedException {
         User user = userRepository.getReferenceById(userId);
         List<Apiary> apiaries = apiaryRepository.getApiariesByUser(user);
 
         return apiaryMapper.toDtoList(apiaries);
     }
 
+    @CacheEvict(value = "user_apiaries", allEntries = true)
     public boolean saveApiary(ApiaryDto apiaryDto) {
         User user = userRepository.getReferenceById(apiaryDto.getUserId());
 
@@ -46,8 +51,9 @@ public class ApiaryServiceImpl extends BaseServiceImpl<Apiary, ApiaryDto> implem
     }
 
     @Override
-    public ApiaryDto findDtoById(Long apiaryId) {
-        Apiary apiary = apiaryRepository.findApiaryById(apiaryId);
+    @DataAccess
+    public ApiaryDto findDtoById(Long apiaryId) throws PermissionDeniedException{
+        Apiary apiary = findById(apiaryId);
         return apiaryMapper.toDto(apiary);
     }
 

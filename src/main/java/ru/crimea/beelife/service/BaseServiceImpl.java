@@ -21,8 +21,9 @@ public abstract class BaseServiceImpl<T extends BasePersistableObject, D extends
 
     @Override
     public void checkUserPermission(User user) throws PermissionDeniedException {
-        if (!user.equals(userHelper.getCurrentUser())) {
-            throw new PermissionDeniedException(messageSource.getMessage("message.user.exception", new Object[]{user.getUsername()}, LocaleContextHolder.getLocale()));
+        User currentUser = userHelper.getCurrentUser();
+        if (!user.equals(currentUser)) {
+            throw new PermissionDeniedException(messageSource.getMessage("message.user.exception", new Object[]{currentUser.getUsername()}, LocaleContextHolder.getLocale()));
         }
     }
 }

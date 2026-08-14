@@ -2,6 +2,7 @@ package ru.crimea.beelife.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -23,9 +24,9 @@ public class ApiaryController {
     private ApiaryService apiaryService;
 
     @GetMapping("/user/home")
-    public String getApiaries(Authentication authentication, Model model) {
+    public String getApiaries(@AuthenticationPrincipal User user, Model model) {
         try {
-            Long userId = ((User) authentication.getPrincipal()).getId();
+            Long userId = user.getId();
             model.addAttribute("apiaries", apiaryService.getApiariesByUserId(userId));
             model.addAttribute("userId", userId);
         } catch (Exception e) {

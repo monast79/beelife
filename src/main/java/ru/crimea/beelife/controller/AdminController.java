@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
@@ -75,6 +76,7 @@ public class AdminController {
 
 
     @PostMapping("/updateUser")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String updateUser(@ModelAttribute("userForm") @Validated UserDto userForm, RedirectAttributes redirectAttributes) {
         try {
             userService.updateUser(userForm);

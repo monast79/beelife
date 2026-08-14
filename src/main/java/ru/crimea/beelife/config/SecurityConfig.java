@@ -18,7 +18,6 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import ru.crimea.beelife.service.UserService;
 
 @Configuration
-@EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
@@ -38,6 +37,7 @@ public class SecurityConfig {
                                 .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
                                 .requestMatchers("/styles/css/**", "/images/**").permitAll()
                                 .requestMatchers("/registration").not().fullyAuthenticated()
+                                .requestMatchers("/confirm-registration").not().fullyAuthenticated()
                                 .requestMatchers("/admin/**").hasAuthority("ADMIN")
                                 .requestMatchers("/user/**").hasAuthority("USER")
                                 .anyRequest().authenticated()

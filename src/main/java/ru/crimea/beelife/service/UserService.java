@@ -36,7 +36,6 @@ public class UserService implements UserDetailsService {
     private UserMapper userMapper;
 
     @Override
-    @NotLogging
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username);
 
@@ -70,6 +69,7 @@ public class UserService implements UserDetailsService {
         return new PageImpl<>(list, PageRequest.of(currentPage, pageSize), userDtos.size());
     }
 
+    @NotLogging
     public boolean saveUser(UserDto userDto) {
         User userFromDB = userRepository.findByUsername(userDto.getUsername());
 
@@ -99,6 +99,7 @@ public class UserService implements UserDetailsService {
         return userMapper.toDto(user);
     }
 
+    @NotLogging
     public void updateUser(UserDto userDto) {
         User userFromDB = userRepository.findByUsername(userDto.getUsername());
 
